@@ -36,4 +36,5 @@ Compras ou Escala → botão **Chat** no topo (com número de novas) → escreve
 
 ## Entrar no app
 Primeira vez ou sempre: **Entrar com Google** → escolhe a conta → já cai em Compras como funcionário.
+Sem Google: **Criar conta** → nome, e-mail, senha (2x) → **Criar conta** → entra (ou "Confira seu e-mail" e entra pelo link). Próximas vezes: e-mail + senha.
 Ou, por convite: dono convida pelo painel do Supabase → pessoa recebe e-mail → cria senha → entra. Próximas vezes: e-mail + senha.

@@ -59,6 +59,8 @@
 - Pessoa desativada não lê nem escreve (RLS).
 
 ## Equipe
-- Qualquer pessoa entra com a conta do Google, sem convite, e já vira **funcionário ativo** com o nome do Google (ADR-008). Convite pelo painel e e-mail/senha continuam valendo.
+- Qualquer pessoa entra com a conta do Google, sem convite, e já vira **funcionário ativo** com o nome do Google (ADR-008).
+- Ou cria conta com **nome, e-mail e senha** na tela de entrada (**Criar conta**): senha com pelo menos 8 letras, repetida igual. Vira funcionário ativo com o nome que escreveu. Se o Supabase pedir confirmação de e-mail, a pessoa vê "Confira seu e-mail" e só entra depois de abrir o link.
+- Convite pelo painel continua valendo.
 - Dono e gerente conferem a tela Equipe e desativam quem não for da equipe. Gerente não desativa o dono nem a si mesmo, não muda papel e não mexe no contato dos outros.
 - Pessoa desativada não entra mais, mas o histórico de turnos fica.

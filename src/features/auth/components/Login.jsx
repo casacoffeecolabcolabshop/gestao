@@ -2,9 +2,10 @@ import { useState } from 'react'
 import { entrar, entrarComGoogle, erroDaVoltaDoGoogle, esquecerErroDoGoogle, pedirNovaSenha } from '../services.js'
 import { CASA, LOGIN_GOOGLE } from '../../../lib/config.js'
 import { IconeGoogle } from '../../../components/Icones.jsx'
+import { CriarConta } from './CriarConta.jsx'
 
 export function Login() {
-  const [modo, setModo] = useState('entrar') // entrar | esqueci | enviado
+  const [modo, setModo] = useState('entrar') // entrar | criar | esqueci | enviado | confirmar
   const [email, setEmail] = useState('')
   const [senha, setSenha] = useState('')
   const [erro, setErro] = useState(() => erroDaVoltaDoGoogle() || '')
@@ -42,14 +43,24 @@ export function Login() {
         <h1>{CASA.app}</h1>
         <p>O que comprar e quem trabalha quando.</p>
       </div>
-      {modo === 'enviado' ? (
+      {modo === 'enviado' || modo === 'confirmar' ? (
         <div className="card coluna">
           <strong>Confira seu e-mail</strong>
-          <span className="meta">Mandamos um link para {email}. Abra e crie uma senha nova.</span>
+          <span className="meta">
+            {modo === 'enviado' ? `Mandamos um link para ${email}. Abra e crie uma senha nova.` : `Mandamos um link para ${email}. Abra para confirmar a conta e entrar.`}
+          </span>
           <button className="btn" onClick={() => setModo('entrar')}>
             Voltar para entrar
           </button>
         </div>
+      ) : modo === 'criar' ? (
+        <CriarConta
+          onVoltar={() => setModo('entrar')}
+          onPrecisaConfirmar={(e) => {
+            setEmail(e)
+            setModo('confirmar')
+          }}
+        />
       ) : (
         <form onSubmit={enviar} noValidate>
           {modo === 'entrar' && LOGIN_GOOGLE && (
@@ -78,7 +89,18 @@ export function Login() {
           <button type="button" className="link" onClick={() => setModo(modo === 'entrar' ? 'esqueci' : 'entrar')}>
             {modo === 'entrar' ? 'Esqueci a senha' : 'Voltar para entrar'}
           </button>
-          {modo === 'entrar' && !LOGIN_GOOGLE && <p className="dica">Sem conta? Peça um convite ao dono da Casa.</p>}
+          {modo === 'entrar' && (
+            <button
+              type="button"
+              className="btn cheio"
+              onClick={() => {
+                setErro('')
+                setModo('criar')
+              }}
+            >
+              Criar conta
+            </button>
+          )}
         </form>
       )}
     </div>

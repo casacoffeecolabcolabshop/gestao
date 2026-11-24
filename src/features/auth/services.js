@@ -1,5 +1,6 @@
 import { supabase } from '../../lib/supabase.js'
 import { de, ok, falha, traduzirErro } from '../../lib/resultado.js'
+import { validarCadastro } from './cadastro.js'
 
 export async function entrar(email, senha) {
   const { data, error } = await supabase.auth.signInWithPassword({ email: email.trim(), password: senha })
@@ -37,6 +38,28 @@ let erroGoogle = (() => {
 export const erroDaVoltaDoGoogle = () => erroGoogle
 export const esquecerErroDoGoogle = () => {
   erroGoogle = null
+}
+
+// Criar conta com e-mail e senha (docs/03). Vira funcionário ativo com o nome escrito (gatilho criar_perfil).
+// data.precisaConfirmar = true quando o Supabase exige abrir o link do e-mail antes de entrar.
+export async function criarConta({ nome, email, senha, repetir }) {
+  const erro = validarCadastro({ nome, email, senha, repetir })
+  if (erro) return falha(erro)
+  const { data, error } = await supabase.auth.signUp({
+    email: email.trim(),
+    password: senha,
+    options: { data: { nome: nome.trim() }, emailRedirectTo: window.location.origin },
+  })
+  if (error) {
+    if (error.code === 'user_already_exists' || /already registered/i.test(error.message)) return falha('Esse e-mail já tem conta. Entre ou use Esqueci a senha.')
+    if (error.code === 'weak_password') return falha('Senha fraca. Use pelo menos 8 caracteres.')
+    if (error.code === 'over_email_send_rate_limit' || error.status === 429) return falha('Muitas contas criadas agora. Tente de novo em alguns minutos.')
+    if (error.code === 'signup_disabled') return falha('Criar conta está desligado. Fale com o dono da Casa.')
+    return falha(traduzirErro(error))
+  }
+  // e-mail já cadastrado com confirmação ligada: o Supabase não dá erro, mas devolve usuário sem identidades
+  if (data.user && !data.user.identities?.length) return falha('Esse e-mail já tem conta. Entre ou use Esqueci a senha.')
+  return ok({ precisaConfirmar: !data.session })
 }
 
 export async function sair() {
