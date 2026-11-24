@@ -10,7 +10,7 @@
 | Vazar telefone da equipe | Só dados mínimos; nada de log com dado pessoal |
 
 ## Checklist antes de ir para produção
-- [ ] RLS ligado em todas as tabelas (`profiles`, `shopping_items`, `shifts`, `shift_requests`)
+- [ ] RLS ligado em todas as tabelas (`profiles`, `shopping_items`, `shifts`, `shift_requests`, `chat_messages`)
 - [ ] Testado: funcionário não consegue criar turno nem aprovar pedido (via console, não só pela tela)
 - [ ] Testado: usuário desativado não lê nada
 - [ ] Cadastro público desligado no Supabase

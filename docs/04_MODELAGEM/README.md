@@ -8,6 +8,7 @@ erDiagram
   profiles ||--o{ shifts : trabalha
   profiles ||--o{ shift_requests : pede
   shifts ||--o{ shift_requests : envolve
+  profiles ||--o{ chat_messages : escreve
 ```
 
 | Tabela | Para que serve | Campos principais |
@@ -16,6 +17,7 @@ erDiagram
 | `shopping_items` | Lista de compras | nome, quantidade, tipo (`insumo`/`produto`), urgente, status, criado_por, comprado_por, comprado_em |
 | `shifts` | Turnos da escala | profile_id, data, inicio, fim, observacao |
 | `shift_requests` | Pedidos de troca e folga | tipo (`troca`/`folga`), solicitante_id, shift_id, substituto_id, data, motivo, status, decidido_por |
+| `chat_messages` | Chat da equipe | sala (`compras`/`escalas`), autor_id, texto |
 
 - Toda tabela tem `created_at` e `updated_at`.
 - Sem `tenant_id` (ADR-002).

@@ -1,0 +1,12 @@
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;padding-top:env(safe-area-inset-top,0px)}
+body{background:var(--cor-fundo);color:var(--cor-texto);font-family:var(--fonte-texto);font-size:16px;line-height:1.4;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:3px solid var(--cor-foco);outline-offset:2px}
+.app{max-width:var(--largura);margin:0 auto;padding-block:8px 180px}
+body.sem-rolagem{overflow:hidden}
+a{color:inherit}
+

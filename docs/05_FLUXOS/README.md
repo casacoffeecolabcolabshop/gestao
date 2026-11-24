@@ -18,5 +18,8 @@ Pedidos → **+ Novo pedido** → Folga (dia) ou Troca (meu turno + quem cobre) 
 ## Aprovar pedido (gerente)
 Pedidos → aba Pendentes → **Aprovar** ou **Recusar** → escala atualiza sozinha.
 
+## Conversar com a equipe
+Compras ou Escala → botão **Chat** no topo (com número de novas) → escreve → **Enviar**. Mensagens dos outros aparecem sozinhas.
+
 ## Entrar no app
 Dono convida pelo painel do Supabase → pessoa recebe e-mail → cria senha → entra. Próximas vezes: e-mail + senha.

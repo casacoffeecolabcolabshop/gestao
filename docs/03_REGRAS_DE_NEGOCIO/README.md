@@ -13,6 +13,9 @@
 | Aprovar/recusar pedidos | ❌ | ✅ | ✅ |
 | Ver horas de todos | ❌ (só as suas) | ✅ | ✅ |
 | Ativar/desativar pessoa, mudar papel | ❌ | ❌ | ✅ |
+| Ler e escrever nos chats (compras e escala) | ✅ | ✅ | ✅ |
+| Apagar a própria mensagem | ✅ | ✅ | ✅ |
+| Apagar mensagem de outra pessoa | ❌ | ✅ | ✅ |
 
 ## Compras
 - Item tem: nome, quantidade (texto livre, ex. "2 caixas"), tipo (**insumo** ou **produto**), observação opcional, urgente sim/não.
@@ -36,6 +39,13 @@
 - Troca aprovada com substituto: o turno passa para o substituto.
 - Folga aprovada: turnos da pessoa naquele dia são removidos.
 - Só pedido pendente pode ser cancelado, e só por quem pediu.
+
+## Chat da equipe
+- Dois chats, um por assunto: **compras** e **escala**. Toda a equipe ativa lê e escreve nos dois.
+- Mensagem tem até 500 letras. Não se edita depois de enviada; quem escreveu pode apagar (com desfazer).
+- Gerente e dono podem apagar qualquer mensagem (moderação).
+- Mensagens chegam ao vivo. O botão **Chat** mostra quantas mensagens novas chegaram desde a última vez que a pessoa abriu.
+- Pessoa desativada não lê nem escreve (RLS).
 
 ## Equipe
 - Ninguém se cadastra sozinho: o dono convida (ADR-003).

@@ -9,6 +9,7 @@ create type tipo_item_t  as enum ('insumo', 'produto');
 create type status_item_t as enum ('pendente', 'comprado');
 create type tipo_pedido_t as enum ('troca', 'folga');
 create type status_pedido_t as enum ('pendente', 'aprovado', 'recusado', 'cancelado');
+create type sala_chat_t    as enum ('compras', 'escalas');
 
 -- ========== util ==========
 create or replace function set_updated_at() returns trigger language plpgsql as $$
@@ -154,11 +155,24 @@ end $$;
 revoke all on function decidir_pedido(uuid, boolean) from public;
 grant execute on function decidir_pedido(uuid, boolean) to authenticated;
 
+-- ========== chat_messages (chat da equipe: um de compras, um de escala) ==========
+create table chat_messages (
+  id          uuid primary key default gen_random_uuid(),
+  sala        sala_chat_t not null,
+  autor_id    uuid not null default auth.uid() references profiles(id),
+  texto       text not null check (char_length(trim(texto)) between 1 and 500),
+  created_at  timestamptz not null default now(),
+  updated_at  timestamptz not null default now()
+);
+create index ix_chat_sala on chat_messages (sala, created_at desc);
+create trigger trg_chat_upd before update on chat_messages for each row execute function set_updated_at();
+
 -- ========== RLS (tabela de permissões de docs/03) ==========
 alter table profiles       enable row level security;
 alter table shopping_items enable row level security;
 alter table shifts         enable row level security;
 alter table shift_requests enable row level security;
+alter table chat_messages  enable row level security;
 
 -- profiles: equipe ativa vê a equipe; cada um edita o próprio contato; dono gerencia papel/ativo
 create policy perfis_ler on profiles for select using (meu_papel() is not null);
@@ -202,3 +216,14 @@ create policy pedidos_criar on shift_requests for insert
 create policy pedidos_cancelar on shift_requests for update
   using (solicitante_id = auth.uid() and status = 'pendente')
   with check (solicitante_id = auth.uid() and status = 'cancelado');
+
+-- chat: equipe ativa lê e escreve; mensagem não se edita; apaga a própria (gestor apaga qualquer uma)
+create policy chat_ler on chat_messages for select using (meu_papel() is not null);
+create policy chat_enviar on chat_messages for insert
+  with check (meu_papel() is not null and autor_id = auth.uid());
+create policy chat_apagar on chat_messages for delete
+  using ((autor_id = auth.uid() and meu_papel() is not null) or sou_gestor());
+
+-- ========== realtime (lista e chat atualizam sozinhos; respeita o RLS) ==========
+alter publication supabase_realtime add table shopping_items;
+alter publication supabase_realtime add table chat_messages;

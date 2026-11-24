@@ -23,3 +23,5 @@ Cor nunca sozinha: sempre com ícone ou palavra (acessibilidade).
 
 ## Navegação
 Barra inferior fixa: **Compras · Escala · Pedidos · Equipe** (Equipe só gerente/dono). Abre em Compras.
+Chat não ocupa a navegação: é o botão **Chat** no topo de Compras e de Escala, e abre em tela cheia.
+Conta (nome, telefone, sair): bolinha com a inicial no topo de toda tela.

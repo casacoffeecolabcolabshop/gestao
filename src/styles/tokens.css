@@ -1,0 +1,53 @@
+/* Cores com significado fixo (docs/02): verde ok, amarelo pendente, vermelho alerta. */
+:root {
+  --cor-fundo: #f5f2ee;
+  --cor-superficie: #ffffff;
+  --cor-superficie-2: #efeae4;
+  --cor-texto: #1e1915;
+  --cor-suave: #6b6158;
+  --cor-linha: #e2dbd3;
+  --cor-primaria: #3a281d;
+  --cor-primaria-texto: #ffffff;
+  --cor-meu: #f1e6da;
+  --cor-meu-linha: #c9a27e;
+  --cor-ok: #1b7f45;
+  --cor-ok-fundo: #e1f3e8;
+  --cor-pendente: #8f5b00;
+  --cor-pendente-fundo: #fcefd2;
+  --cor-alerta: #bf3328;
+  --cor-alerta-fundo: #fbe3e0;
+  --cor-neutro: #5f5a55;
+  --cor-neutro-fundo: #ece8e4;
+  --cor-foco: #2b4c7e;
+  --sombra: 0 1px 2px rgba(40, 25, 15, 0.06), 0 4px 16px rgba(40, 25, 15, 0.06);
+  --fonte-titulo: 'Bricolage Grotesque', 'Figtree', system-ui, sans-serif;
+  --fonte-texto: 'Figtree', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --raio: 12px;
+  --largura: 520px;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --cor-fundo: #14110e;
+    --cor-superficie: #1e1a16;
+    --cor-superficie-2: #29231e;
+    --cor-texto: #f2ede7;
+    --cor-suave: #a99e93;
+    --cor-linha: #352e28;
+    --cor-primaria: #e2be96;
+    --cor-primaria-texto: #1c140e;
+    --cor-meu: #2e251d;
+    --cor-meu-linha: #8c6a4b;
+    --cor-ok: #55c985;
+    --cor-ok-fundo: #163223;
+    --cor-pendente: #edb84a;
+    --cor-pendente-fundo: #382b11;
+    --cor-alerta: #f27f73;
+    --cor-alerta-fundo: #3d1c18;
+    --cor-neutro: #b5aea7;
+    --cor-neutro-fundo: #2b2723;
+    --cor-foco: #8fb4ea;
+    --sombra: 0 1px 2px rgba(0, 0, 0, 0.3), 0 4px 16px rgba(0, 0, 0, 0.25);
+    color-scheme: dark;
+  }
+}
