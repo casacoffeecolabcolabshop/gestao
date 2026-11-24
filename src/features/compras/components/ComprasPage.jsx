@@ -8,6 +8,7 @@ import { Etiqueta } from '../../../components/Etiqueta.jsx'
 import { IconeCheck } from '../../../components/Icones.jsx'
 import { BotaoChat } from '../../chat/index.js'
 import { haQuanto } from '../../../lib/datas.js'
+import { useComputador } from '../../../lib/useComputador.js'
 import { listarItens, adicionarItem, adicionarVarios, editarItem, marcarComoComprado, desfazerCompra, apagarItem, recriarItem, assinarItens } from '../services.js'
 import { ItemForm } from './ItemForm.jsx'
 import { ListaForm } from './ListaForm.jsx'
@@ -27,6 +28,7 @@ export function ComprasPage() {
   const [verComprados, setVerComprados] = useState(false)
   const [varios, setVarios] = useState(false)
   const [painel, setPainel] = useState(false)
+  const computador = useComputador() // no computador o painel fica fixo ao lado (docs/02)
   const espera = useRef()
 
   const carregar = useCallback(async (silencioso) => {
@@ -164,7 +166,7 @@ export function ComprasPage() {
           )}
         </div>
         <div className="acoes-topo">
-          {estado === 'ok' && (
+          {estado === 'ok' && !computador && (
             <button className="btn peq btn-para-comprar" onClick={() => setPainel(true)}>
               Para comprar
             </button>
@@ -176,7 +178,8 @@ export function ComprasPage() {
       {estado === 'carregando' && <Carregando />}
       {estado !== 'carregando' && estado !== 'ok' && <EstadoErro mensagem={estado} onTentar={() => carregar()} />}
       {estado === 'ok' && (
-        <>
+        <div className="compras-grade">
+          <div className="compras-lista">
           {pendentes.length ? (
             <div className="lista">{pendentes.map((it) => <Card key={it.id} it={it} />)}</div>
           ) : (
@@ -193,7 +196,13 @@ export function ComprasPage() {
               {verComprados && <div className="lista">{comprados.map((it) => <Card key={it.id} it={it} />)}</div>}
             </>
           )}
-        </>
+          </div>
+          {computador && (
+            <aside className="compras-lado">
+              <PainelComprar itens={itens} podeMarcar={souGestor} onComprar={comprar} onDesmarcar={desmarcar} fixo />
+            </aside>
+          )}
+        </div>
       )}
 
       <AcaoPrincipal onClick={() => setForm({})}>+ Acabou algo</AcaoPrincipal>
@@ -219,7 +228,7 @@ export function ComprasPage() {
           onFechar={() => setVarios(false)}
         />
       )}
-      {painel && (
+      {painel && !computador && (
         <PainelComprar itens={itens} podeMarcar={souGestor} onComprar={comprar} onDesmarcar={desmarcar} onFechar={() => setPainel(false)} />
       )}
     </>

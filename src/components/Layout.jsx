@@ -53,12 +53,13 @@ export function Layout() {
             {perfil.nome.slice(0, 1).toUpperCase()}
           </button>
         </header>
-        <main>
+        <main data-tela={pathname.split('/')[1] || 'compras'}>
           <Outlet context={contexto} />
         </main>
       </div>
       <div className="rodape">
         <div className="in">
+          <span className="marca rodape-marca">{CASA.nome}</span>
           <div ref={setSlot} />
           <NavInferior pendentes={pendentes} />
         </div>

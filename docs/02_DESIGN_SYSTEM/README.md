@@ -1,6 +1,6 @@
 # 02 Design system
 
-Meta: **bateu o olho, entendeu.** Celular primeiro (360px), funciona no desktop.
+Meta: **bateu o olho, entendeu.** Celular primeiro (360px); no computador aproveita a largura (ver Computador).
 
 ## Cores (significado fixo)
 | Uso | Cor | Token |
@@ -25,3 +25,14 @@ Cor nunca sozinha: sempre com ícone ou palavra (acessibilidade).
 Barra inferior fixa: **Compras · Escala · Pedidos · Equipe** (Equipe só gerente/dono). Abre em Compras.
 Chat não ocupa a navegação: é o botão **Chat** no topo de Compras e de Escala, e abre em tela cheia.
 Conta (nome, telefone, sair): bolinha com a inicial no topo de toda tela.
+
+## Computador (tela a partir de 960px)
+Mesmo app, mesmas telas e textos; só muda a arrumação. Celular continua sendo o principal.
+- **Navegação na lateral esquerda**, fixa: nome da Casa, botão principal da tela (ex.: **+ Acabou algo**) e os itens Compras · Escala · Pedidos · Equipe em coluna.
+- Conteúdo com até 1120px de largura, ao lado da lateral.
+- **Compras:** lista à esquerda e o painel **Para comprar** sempre aberto à direita (com check e Baixar PDF).
+- **Escala:** dias da semana em grade (até 7 colunas lado a lado quando couber); suas horas e horas da equipe lado a lado.
+- **Pedidos e Equipe:** cartões em duas colunas.
+- Formulários abrem como janela no centro da tela (no celular sobem do rodapé).
+- Chat abre como painel na lateral direita, sem cobrir a tela toda.
+- Avisos (toast) aparecem embaixo, centralizados no conteúdo.

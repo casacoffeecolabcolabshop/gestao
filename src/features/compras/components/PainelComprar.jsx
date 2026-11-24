@@ -8,7 +8,8 @@ import { baixarPdfCompras } from '../pdf.js'
 
 // Painel "Para comprar": primeiro ver, depois o PDF se quiser (docs/03, ADR-007).
 // Gerente e dono marcam item por item; o que foi marcado aqui fica verde no lugar até fechar.
-export function PainelComprar({ itens, podeMarcar, onComprar, onDesmarcar, onFechar }) {
+// `fixo`: no computador o painel fica sempre aberto ao lado da lista, sem janela (docs/02).
+export function PainelComprar({ itens, podeMarcar, onComprar, onDesmarcar, onFechar, fixo = false }) {
   const toast = useToast()
   const [gerando, setGerando] = useState(false)
   const [marcadosAqui, setMarcadosAqui] = useState(() => new Set())
@@ -36,17 +37,25 @@ export function PainelComprar({ itens, podeMarcar, onComprar, onDesmarcar, onFec
     }
   }
 
+  // no painel fixo, "fechar" é tirar da vista os que já foram comprados
+  const limparComprados = () => setMarcadosAqui(new Set())
   const resumo = comprados
     ? `${comprados} de ${total} comprado${comprados > 1 ? 's' : ''}`
     : `${total} ${total === 1 ? 'item' : 'itens'}`
 
-  return (
-    <Sheet titulo="Para comprar" onFechar={onFechar}>
-      {total === 0 ? (
+  const conteudo =
+    total === 0 ? (
         <EstadoVazio titulo="Nada para comprar">Quando algo acabar, toque em <b>+ Acabou algo</b>.</EstadoVazio>
       ) : (
         <>
-          <p className={`painel-total ${comprados ? 'com-progresso' : ''}`}>{resumo}</p>
+          <p className={`painel-total ${comprados ? 'com-progresso' : ''}`}>
+            {resumo}
+            {fixo && comprados > 0 && faltam > 0 && (
+              <button className="link painel-limpar" onClick={limparComprados}>
+                Tirar os comprados daqui
+              </button>
+            )}
+          </p>
           {comprados > 0 && (
             <div className="painel-progresso" aria-hidden="true">
               <span style={{ width: `${(comprados / total) * 100}%` }} />
@@ -85,7 +94,7 @@ export function PainelComprar({ itens, podeMarcar, onComprar, onDesmarcar, onFec
           ))}
           <div className="acoes painel-acoes">
             {faltam === 0 ? (
-              <button className="btn ok" onClick={onFechar}>
+              <button className="btn ok" onClick={fixo ? limparComprados : onFechar}>
                 Tudo comprado
               </button>
             ) : (
@@ -95,7 +104,19 @@ export function PainelComprar({ itens, podeMarcar, onComprar, onDesmarcar, onFec
             )}
           </div>
         </>
-      )}
-    </Sheet>
+      )
+
+  if (!fixo) {
+    return (
+      <Sheet titulo="Para comprar" onFechar={onFechar}>
+        {conteudo}
+      </Sheet>
+    )
+  }
+  return (
+    <section className="painel-fixo" aria-label="Para comprar">
+      <h2>Para comprar</h2>
+      {conteudo}
+    </section>
   )
 }

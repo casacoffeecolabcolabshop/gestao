@@ -18,7 +18,7 @@ Ordem de construção. Cada item termina com tela funcionando no celular e RLS t
 12. [x] Subir: Supabase na nuvem (`makrghducycdotzbknig`) + Vercel da Casa (projeto `casa-gestao`, publica sozinho a cada push na `main`)
 13. [ ] Teste com a equipe real por 1 semana, anotar em `memory/learnings.md`
 14. [x] **Entrar com Google** sem convite (ADR-008): conta nova vira funcionário ativo.
-15. [ ] **Layout para computador** (pedido do Matheus, 24/11): hoje tudo fica numa coluna de celular (520px). No computador: aproveitar a largura (ex.: lista de compras e painel lado a lado, escala da semana em grade de 7 colunas, navegação na lateral). Celular continua sendo o principal (Princípio nº 1).
+15. [x] **Layout para computador** (a partir de 960px): navegação lateral, Compras com painel ao lado, Escala em grade, formulários no centro, chat na lateral (docs/02).
 16. [ ] **Gerente gerencia permissões** (pedido do Matheus, 24/11): hoje só o dono muda papel e ativa/desativa. Definir com o Matheus: gerente pode promover a gerente? Mexer no dono? Desativar? Muda RLS (`proteger_papel`, `perfis_dono`), docs/03 e testes.
 
 ## Fase 2 (só se a equipe pedir)

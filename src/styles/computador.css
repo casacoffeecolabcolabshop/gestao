@@ -1,0 +1,64 @@
+/* Peças usadas nos dois tamanhos */
+.rodape-marca{display:none}
+.copiar-semana{margin-top:12px}
+.painel-limpar{margin-left:12px;min-height:32px;font-size:14px}
+
+/* Computador (docs/02): a partir de 960px. Mesmo corte de src/lib/useComputador.js */
+@media (min-width:960px){
+  :root{--lateral:232px}
+  body:has(.rodape){padding-left:calc(var(--lateral) + 32px);padding-right:32px}
+  .app{max-width:1120px;padding-bottom:48px}
+
+  /* navegação vira lateral esquerda fixa */
+  .rodape{top:0;right:auto;width:var(--lateral);border-top:0;border-right:1px solid var(--cor-linha);padding:20px 16px;overflow-y:auto}
+  .rodape .in{max-width:none;display:flex;flex-direction:column;gap:16px;height:100%}
+  .rodape-marca{display:block;font-size:16px;color:var(--cor-texto);padding:6px 8px 0}
+  .barra-topo{justify-content:flex-end}
+  .barra-topo .marca{display:none}
+  .cta{padding-top:0}
+  .cta .btn{min-height:52px;font-size:17px}
+  .nav{flex-direction:column;gap:4px;margin-top:0}
+  .nav a{flex:none;flex-direction:row;justify-content:flex-start;gap:12px;min-height:48px;padding:0 12px;border-radius:10px;font-size:16px}
+  .nav a:hover{background:var(--cor-superficie-2);color:var(--cor-texto)}
+  .nav a[aria-current="page"]{background:var(--cor-superficie-2)}
+  .nav a[aria-current="page"]::after{top:10px;bottom:10px;left:0;right:auto;width:3px;height:auto;border-radius:0 3px 3px 0}
+  .nav .badge{position:static;margin-left:auto}
+
+  .topo h1{font-size:32px}
+
+  /* Compras: lista + painel fixo ao lado */
+  .compras-grade{display:grid;grid-template-columns:minmax(0,1fr) 380px;gap:24px;align-items:start}
+  .compras-lado{position:sticky;top:16px;max-height:calc(100vh - 32px);overflow-y:auto;background:var(--cor-superficie);border:1px solid var(--cor-linha);border-radius:var(--raio);padding:16px}
+  .painel-fixo h2{font-family:var(--fonte-titulo);font-size:22px;margin:0 0 12px}
+  .painel-fixo .painel-total{margin:0 0 8px}
+
+  /* Escala: resumo lado a lado, dias em grade */
+  .escala-resumo{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:16px;align-items:start;margin-top:12px}
+  .escala-resumo .horas{margin-top:0}
+  .escala-equipe .secao{margin-top:0}
+  [data-tela="escala"] .lista.dias{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px}
+
+  /* Pedidos e Equipe: cartões em duas colunas */
+  [data-tela="pedidos"] .lista,[data-tela="equipe"] .lista{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;align-items:start}
+
+  /* formulários: janela no centro em vez de subir do rodapé */
+  .veu{align-items:center;padding:24px}
+  .sheet{max-width:560px;border-radius:18px;max-height:88vh;padding:16px 24px 24px}
+  .sheet .alca{display:none}
+
+  /* chat: painel na lateral direita */
+  .chat-veu{justify-content:flex-end}
+  .chat-veu .chat{max-width:440px;box-shadow:var(--sombra)}
+
+  /* aviso embaixo, centrado no conteúdo */
+  .toast{bottom:24px}
+  body:has(.rodape) .toast{left:calc(50% + var(--lateral) / 2)}
+
+  /* login e criar senha: cartão no meio */
+  .entrada{max-width:440px;margin:0 auto;padding-top:12vh}
+}
+
+/* tela muito larga: 7 dias da escala lado a lado */
+@media (min-width:1500px){
+  [data-tela="escala"] .lista.dias{grid-template-columns:repeat(7,minmax(0,1fr))}
+}

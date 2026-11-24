@@ -126,6 +126,7 @@ export function EscalaPage() {
       {estado !== 'carregando' && estado !== 'ok' && <EstadoErro mensagem={estado} onTentar={() => carregar()} />}
       {estado === 'ok' && (
         <>
+          <div className="escala-resumo">
           <div className="horas">
             <div>
               <div className="l">Suas horas</div>
@@ -139,7 +140,7 @@ export function EscalaPage() {
           </div>
 
           {souGestor && (
-            <>
+            <div className="escala-equipe">
               <div className="secao">
                 <span>Horas da equipe na semana</span>
               </div>
@@ -154,13 +155,14 @@ export function EscalaPage() {
                   </div>
                 ))}
               </div>
-              <div style={{ marginTop: 12 }}>
+              <div className="copiar-semana">
                 <button className="btn cheio" onClick={copiar} disabled={copiando}>
                   {copiando ? 'Copiando…' : 'Copiar semana anterior'}
                 </button>
               </div>
-            </>
+            </div>
           )}
+          </div>
 
           {!daSemana.length && (
             <EstadoVazio titulo="Semana sem turnos">{souGestor ? 'Copie a semana anterior ou adicione turno por dia.' : 'A escala desta semana ainda não saiu.'}</EstadoVazio>
@@ -169,7 +171,7 @@ export function EscalaPage() {
           <div className="secao">
             <span>Dias</span>
           </div>
-          <div className="lista">
+          <div className="lista dias">
             {Array.from({ length: 7 }, (_, i) => {
               const d = somarDias(semana, i)
               const dt = parseData(d)

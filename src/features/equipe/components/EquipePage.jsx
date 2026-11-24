@@ -49,7 +49,7 @@ export function EquipePage() {
         </div>
       </div>
       {!souDono && <p className="dica topo-dica">Só o dono muda papel ou desativa alguém.</p>}
-      {!lista.length && <EstadoVazio titulo="Ninguém na equipe ainda">Convide a equipe pelo painel do Supabase.</EstadoVazio>}
+      {!lista.length && <EstadoVazio titulo="Ninguém na equipe ainda">Quem entrar com Google aparece aqui.</EstadoVazio>}
       <div className="lista">
         {lista.map((p) => {
           const eu = p.id === perfil.id
@@ -85,10 +85,10 @@ export function EquipePage() {
         })}
       </div>
       <div className="secao">
-        <span>Convidar alguém</span>
+        <span>Gente nova</span>
       </div>
       <p className="dica">
-        No painel do Supabase: Authentication, Users, Invite user. A pessoa recebe o e-mail, cria a senha e entra como Funcionário. O papel muda aqui.
+        Quem entra com Google aparece aqui como Funcionário, sem convite. Não reconhece alguém? Desative. O papel muda aqui.
       </p>
     </>
   )
