@@ -37,6 +37,14 @@
   .escala-resumo .horas{margin-top:0}
   .escala-equipe .secao{margin-top:0}
   [data-tela="escala"] .lista.dias{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px}
+  /* dia estreito na grade: horário em cima, pessoa e etiquetas embaixo, tudo podendo quebrar linha */
+  [data-tela="escala"] .lista.dias .dia{min-width:0;padding:10px}
+  [data-tela="escala"] .lista.dias .dia h3{flex-wrap:wrap;gap:2px 8px}
+  [data-tela="escala"] .lista.dias .turno{flex-direction:column;align-items:flex-start;gap:2px;padding:8px 10px}
+  [data-tela="escala"] .lista.dias .turno .h{white-space:normal;font-size:14px}
+  [data-tela="escala"] .lista.dias .turno .p{width:100%}
+  [data-tela="escala"] .lista.dias .turno .tag{white-space:normal}
+  [data-tela="escala"] .lista.dias .mais-turno{width:100%}
 
   /* Pedidos e Equipe: cartões em duas colunas */
   [data-tela="pedidos"] .lista,[data-tela="equipe"] .lista{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;align-items:start}
