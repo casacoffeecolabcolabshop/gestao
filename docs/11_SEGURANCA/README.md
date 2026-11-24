@@ -10,14 +10,14 @@
 | Vazar telefone da equipe | Só dados mínimos; nada de log com dado pessoal |
 
 ## Checklist antes de ir para produção
-- [ ] RLS ligado em todas as tabelas (`profiles`, `shopping_items`, `shifts`, `shift_requests`, `chat_messages`)
-- [ ] Testado: funcionário não consegue criar turno nem aprovar pedido (via console, não só pela tela)
-- [ ] Testado: usuário desativado não lê nada
+- [x] RLS ligado em todas as tabelas (`profiles`, `shopping_items`, `shifts`, `shift_requests`, `chat_messages`)
+- [x] Testado: funcionário não consegue criar turno nem aprovar pedido (via console, não só pela tela)
+- [x] Testado: usuário desativado não lê nada
 - [ ] Cadastro público desligado no Supabase
-- [ ] `.env` no `.gitignore`, só `.env.example` versionado
+- [x] `.env` no `.gitignore`, só `.env.example` versionado
 - [ ] Rota protegida checa sessão antes de renderizar
 - [ ] Inputs validados (tamanho máximo, campos obrigatórios, hora fim ≠ início)
-- [ ] `npm audit` sem crítica
+- [x] `npm audit` sem crítica (2 moderadas no react-router adiadas, `memory/bugs.md` B-001)
 
 ## LGPD
 Só nome, e-mail, telefone e turnos. Na saída de alguém: desativar no mesmo dia; apagar contato se pedir.
