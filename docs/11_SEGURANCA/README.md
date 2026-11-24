@@ -13,7 +13,7 @@
 - [x] RLS ligado em todas as tabelas (`profiles`, `shopping_items`, `shifts`, `shift_requests`, `chat_messages`)
 - [x] Testado: funcionário não consegue criar turno nem aprovar pedido (via console, não só pela tela)
 - [x] Testado: usuário desativado não lê nada
-- [ ] Cadastro público desligado no Supabase
+- [x] Cadastro público desligado no Supabase (nuvem conferida em 24/11)
 - [x] `.env` no `.gitignore`, só `.env.example` versionado
 - [ ] Rota protegida checa sessão antes de renderizar
 - [ ] Inputs validados (tamanho máximo, campos obrigatórios, hora fim ≠ início)
