@@ -1,16 +1,30 @@
 import { useState } from 'react'
-import { entrar, pedirNovaSenha } from '../services.js'
-import { CASA } from '../../../lib/config.js'
+import { entrar, entrarComGoogle, erroDaVoltaDoGoogle, esquecerErroDoGoogle, pedirNovaSenha } from '../services.js'
+import { CASA, LOGIN_GOOGLE } from '../../../lib/config.js'
+import { IconeGoogle } from '../../../components/Icones.jsx'
 
 export function Login() {
   const [modo, setModo] = useState('entrar') // entrar | esqueci | enviado
   const [email, setEmail] = useState('')
   const [senha, setSenha] = useState('')
-  const [erro, setErro] = useState('')
+  const [erro, setErro] = useState(() => erroDaVoltaDoGoogle() || '')
   const [ocupado, setOcupado] = useState(false)
+
+  const google = async () => {
+    esquecerErroDoGoogle()
+    setErro('')
+    setOcupado(true)
+    const { error } = await entrarComGoogle()
+    // sem erro a página sai para o Google; só volta aqui se falhar
+    if (error) {
+      setOcupado(false)
+      setErro(error)
+    }
+  }
 
   const enviar = async (e) => {
     e.preventDefault()
+    esquecerErroDoGoogle()
     setErro('')
     if (!email.includes('@')) return setErro('Escreva seu e-mail')
     if (modo === 'entrar' && !senha) return setErro('Escreva sua senha')
@@ -38,6 +52,15 @@ export function Login() {
         </div>
       ) : (
         <form onSubmit={enviar} noValidate>
+          {modo === 'entrar' && LOGIN_GOOGLE && (
+            <>
+              <button type="button" className="btn google" onClick={google} disabled={ocupado}>
+                <IconeGoogle />
+                Entrar com Google
+              </button>
+              <div className="ou">ou com e-mail</div>
+            </>
+          )}
           <label className="campo">
             <span>E-mail</span>
             <input id="login-email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} autoComplete="email" inputMode="email" />
@@ -55,7 +78,7 @@ export function Login() {
           <button type="button" className="link" onClick={() => setModo(modo === 'entrar' ? 'esqueci' : 'entrar')}>
             {modo === 'entrar' ? 'Esqueci a senha' : 'Voltar para entrar'}
           </button>
-          {modo === 'entrar' && <p className="dica">Sem conta? Peça um convite ao dono da Casa.</p>}
+          {modo === 'entrar' && !LOGIN_GOOGLE && <p className="dica">Sem conta? Peça um convite ao dono da Casa.</p>}
         </form>
       )}
     </div>

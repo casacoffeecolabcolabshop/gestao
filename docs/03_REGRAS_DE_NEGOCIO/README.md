@@ -51,5 +51,6 @@
 - Pessoa desativada não lê nem escreve (RLS).
 
 ## Equipe
-- Ninguém se cadastra sozinho: o dono convida (ADR-003).
+- Qualquer pessoa entra com a conta do Google, sem convite, e já vira **funcionário ativo** com o nome do Google (ADR-008). Convite pelo painel e e-mail/senha continuam valendo.
+- O dono confere a tela Equipe e desativa quem não for da equipe.
 - Pessoa desativada não entra mais, mas o histórico de turnos fica.

@@ -17,8 +17,9 @@ Ordem de construção. Cada item termina com tela funcionando no celular e RLS t
 11. [ ] Testes locais completos (checklist de `docs/11_SEGURANCA`)
 12. [x] Subir: Supabase na nuvem (`makrghducycdotzbknig`) + Vercel da Casa (projeto `casa-gestao`, publica sozinho a cada push na `main`)
 13. [ ] Teste com a equipe real por 1 semana, anotar em `memory/learnings.md`
-14. [ ] **Entrar com Google** (pedido do Matheus, 24/11): botão "Entrar com Google" na tela de login. Continua só por convite (ADR-003): Google só entra se o e-mail já foi convidado; cadastro público segue desligado. Precisa de ADR (muda ADR-003), credencial OAuth no Google Cloud (grátis) e configurar o provedor no Supabase local e na nuvem.
+14. [x] **Entrar com Google** sem convite (ADR-008): conta nova vira funcionário ativo.
 15. [ ] **Layout para computador** (pedido do Matheus, 24/11): hoje tudo fica numa coluna de celular (520px). No computador: aproveitar a largura (ex.: lista de compras e painel lado a lado, escala da semana em grade de 7 colunas, navegação na lateral). Celular continua sendo o principal (Princípio nº 1).
+16. [ ] **Gerente gerencia permissões** (pedido do Matheus, 24/11): hoje só o dono muda papel e ativa/desativa. Definir com o Matheus: gerente pode promover a gerente? Mexer no dono? Desativar? Muda RLS (`proteger_papel`, `perfis_dono`), docs/03 e testes.
 
 ## Fase 2 (só se a equipe pedir)
 - Convite pelo próprio app (edge function)

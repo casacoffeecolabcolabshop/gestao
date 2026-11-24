@@ -27,8 +27,11 @@ const anon = createClient(URL, KEY, { auth: { persistSession: false } })
 console.log('\n— Acesso')
 ok(!joao.error && !carla.error && !dono.error, 'equipe de teste entra')
 {
-  const { error } = await anon.auth.signUp({ email: 'estranho@x.com', password: 'abcd12345' })
-  ok(Boolean(error), 'estranho não consegue se cadastrar (cadastro público desligado)')
+  // Cadastro aberto (ADR-008): quem entra sem convite vira funcionário ativo, com o nome que veio do Google.
+  const novo = createClient(URL, KEY, { auth: { persistSession: false } })
+  const cad = await novo.auth.signUp({ email: 'pessoa.nova@casa.local', password: 'abcd12345', options: { data: { full_name: 'Pessoa Nova' } } })
+  const p = cad.data?.user ? (await novo.from('profiles').select('nome, papel, ativo').eq('id', cad.data.user.id).single()).data : null
+  ok(p?.papel === 'funcionario' && p?.ativo === true && p?.nome === 'Pessoa Nova', 'conta nova sem convite entra como funcionário, com o nome do Google')
   // sem login: barrado pela permissão da API (migration permissoes_api) ou, se ela existir, pelo RLS. Nos dois casos não lê nada.
   let anonLeu = 0
   for (const t of ['profiles', 'shopping_items', 'shifts', 'shift_requests', 'chat_messages']) {

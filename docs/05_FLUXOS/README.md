@@ -29,4 +29,5 @@ Pedidos → aba Pendentes → **Aprovar** ou **Recusar** → escala atualiza soz
 Compras ou Escala → botão **Chat** no topo (com número de novas) → escreve → **Enviar**. Mensagens dos outros aparecem sozinhas.
 
 ## Entrar no app
-Dono convida pelo painel do Supabase → pessoa recebe e-mail → cria senha → entra. Próximas vezes: e-mail + senha.
+Primeira vez ou sempre: **Entrar com Google** → escolhe a conta → já cai em Compras como funcionário.
+Ou, por convite: dono convida pelo painel do Supabase → pessoa recebe e-mail → cria senha → entra. Próximas vezes: e-mail + senha.

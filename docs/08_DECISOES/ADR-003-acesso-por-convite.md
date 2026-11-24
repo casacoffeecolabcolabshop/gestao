@@ -1,6 +1,6 @@
 # ADR-003: Acesso só por convite
 
-- **Status:** Aceito · **Data:** 2026-11-24
+- **Status:** Substituído por ADR-008 (cadastro aberto com Google) · **Data:** 2026-11-24
 
 ## Contexto
 Só a equipe pode entrar. Tela de convite própria exigiria `service_role` num servidor (edge function).

@@ -155,3 +155,8 @@ form{display:flex;flex-direction:column;gap:14px}
 .entrada-marca h1{font-family:var(--fonte-titulo);font-size:36px;line-height:1.05;margin:6px 0 8px;letter-spacing:-.02em}
 .entrada-marca p{margin:0;color:var(--cor-suave);font-size:17px}
 .bloqueado h2{font-family:var(--fonte-titulo)}
+/* Entrar com Google (ADR-008) */
+.btn.google{width:100%;min-height:52px;background:var(--cor-superficie);color:var(--cor-texto);border-color:var(--cor-linha);font-size:17px}
+.btn.google svg{width:20px;height:20px}
+.ou{display:flex;align-items:center;gap:12px;color:var(--cor-suave);font-size:14px}
+.ou::before,.ou::after{content:"";flex:1;height:1px;background:var(--cor-linha)}

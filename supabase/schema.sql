@@ -36,12 +36,20 @@ $$;
 create or replace function sou_gestor() returns boolean
 language sql stable as $$ select meu_papel() in ('dono', 'gerente') $$;
 
--- cria o perfil quando o dono convida alguém (ADR-003)
+-- cria o perfil de toda conta nova: convite (ADR-003) ou Google sem convite (ADR-008)
 create or replace function criar_perfil() returns trigger
 language plpgsql security definer set search_path = public as $$
 begin
   insert into profiles (id, nome)
-  values (new.id, coalesce(new.raw_user_meta_data->>'nome', split_part(new.email, '@', 1)));
+  values (
+    new.id,
+    left(coalesce(
+      nullif(trim(new.raw_user_meta_data->>'nome'), ''),
+      nullif(trim(new.raw_user_meta_data->>'full_name'), ''),
+      nullif(trim(new.raw_user_meta_data->>'name'), ''),
+      split_part(new.email, '@', 1)
+    ), 80)
+  );
   return new;
 end $$;
 create trigger trg_novo_usuario after insert on auth.users for each row execute function criar_perfil();

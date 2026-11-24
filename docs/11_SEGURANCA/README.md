@@ -4,7 +4,7 @@
 | Risco | Proteção |
 |---|---|
 | Funcionário mexe na escala ou aprova o próprio pedido | RLS por papel + RPC confere papel (ADR-004) |
-| Estranho cria conta | Cadastro público desligado (ADR-003) |
+| Estranho cria conta | **Risco aceito (ADR-008):** cadastro aberto com Google; dono desativa na tela Equipe |
 | Ex-funcionário continua entrando | Dono desativa; RLS bloqueia quem tem `ativo = false` |
 | Chave vazada | Só `anon` no front; `.env` fora do git; `service_role` nunca no app |
 | Vazar telefone da equipe | Só dados mínimos; nada de log com dado pessoal |
@@ -13,7 +13,7 @@
 - [x] RLS ligado em todas as tabelas (`profiles`, `shopping_items`, `shifts`, `shift_requests`, `chat_messages`)
 - [x] Testado: funcionário não consegue criar turno nem aprovar pedido (via console, não só pela tela)
 - [x] Testado: usuário desativado não lê nada
-- [x] Cadastro público desligado no Supabase (nuvem conferida em 24/11)
+- [x] Cadastro aberto de propósito (ADR-008, risco aceito); dono confere a tela Equipe
 - [x] `.env` no `.gitignore`, só `.env.example` versionado
 - [ ] Rota protegida checa sessão antes de renderizar
 - [ ] Inputs validados (tamanho máximo, campos obrigatórios, hora fim ≠ início)
