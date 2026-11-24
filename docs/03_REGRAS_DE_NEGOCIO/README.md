@@ -43,6 +43,7 @@
 - Troca aprovada com substituto: o turno passa para o substituto.
 - Folga aprovada: turnos da pessoa naquele dia são removidos.
 - Só pedido pendente pode ser cancelado, e só por quem pediu.
+- Aprovar e recusar têm **desfazer por 5 segundos** (sem "tem certeza?"): a decisão só vai para o banco depois desse tempo. Se o gerente sair da tela antes, a decisão é enviada na hora; se fechar o app antes, o pedido continua pendente.
 
 ## Chat da equipe
 - Dois chats, um por assunto: **compras** e **escala**. Toda a equipe ativa lê e escreve nos dois.

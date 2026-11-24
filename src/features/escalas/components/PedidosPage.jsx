@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { useOutletContext } from 'react-router-dom'
 import { useAuth } from '../../auth/AuthContext.jsx'
 import { useToast } from '../../../components/Toast.jsx'
@@ -26,7 +26,9 @@ export function PedidosPage() {
   const [estado, setEstado] = useState('carregando')
   const [aba, setAba] = useState(souGestor ? 'pendentes' : 'meus')
   const [form, setForm] = useState(null) // null | { meusTurnos }
-  const [decidindo, setDecidindo] = useState(null)
+  // Aprovar/recusar com desfazer (docs/03): a decisão espera 5s antes de ir para o banco.
+  const [emEspera, setEmEspera] = useState({}) // id do pedido -> aprovado (true/false)
+  const adiados = useRef(new Map()) // id -> { timer, aprovado }
 
   const carregar = useCallback(
     async (silencioso) => {
@@ -65,21 +67,59 @@ export function PedidosPage() {
     carregar(true)
   }
 
-  const decidir = async (p, aprovado) => {
-    setDecidindo(p.id)
-    const { error } = await decidirPedido(p.id, aprovado)
-    setDecidindo(null)
-    if (error) return toast(error, { erro: true })
+  const tirarDaEspera = (id) =>
+    setEmEspera((e) => {
+      const n = { ...e }
+      delete n[id]
+      return n
+    })
+
+  const enviarDecisao = useCallback(
+    async (id, aprovado) => {
+      adiados.current.delete(id)
+      const { error } = await decidirPedido(id, aprovado)
+      tirarDaEspera(id)
+      if (error) toast(error, { erro: true })
+      carregar(true)
+    },
+    [toast, carregar],
+  )
+
+  // saiu da tela antes dos 5s: manda as decisões que estavam esperando
+  useEffect(() => {
+    const fila = adiados.current
+    return () => {
+      for (const [id, { timer, aprovado }] of fila) {
+        clearTimeout(timer)
+        decidirPedido(id, aprovado).then((r) => r.error && toast(r.error, { erro: true }))
+      }
+      fila.clear()
+    }
+  }, [toast])
+
+  const decidir = (p, aprovado) => {
+    setEmEspera((e) => ({ ...e, [p.id]: aprovado }))
+    const timer = setTimeout(() => enviarDecisao(p.id, aprovado), 5000)
+    adiados.current.set(p.id, { timer, aprovado })
     let efeito = ''
-    if (aprovado && p.tipo === 'troca' && p.substituto_id) efeito = ` O turno passou para ${nomeDe(p.substituto_id)}.`
-    if (aprovado && p.tipo === 'folga') efeito = ' Os turnos desse dia saíram da escala.'
-    toast((aprovado ? 'Aprovado.' : 'Recusado.') + efeito)
-    carregar(true)
+    if (aprovado && p.tipo === 'troca' && p.substituto_id) efeito = ` O turno passa para ${nomeDe(p.substituto_id)}.`
+    if (aprovado && p.tipo === 'folga') efeito = ' Os turnos desse dia saem da escala.'
+    toast((aprovado ? 'Aprovado.' : 'Recusado.') + efeito, {
+      desfazer: () => {
+        clearTimeout(timer)
+        adiados.current.delete(p.id)
+        tirarDaEspera(p.id)
+      },
+    })
   }
 
-  const pendentes = pedidos.filter((p) => p.status === 'pendente').sort((a, b) => a.created_at.localeCompare(b.created_at))
-  const decididos = pedidos.filter((p) => p.status !== 'pendente' && p.status !== 'cancelado').slice(0, 10)
-  const meus = pedidos.filter((p) => p.solicitante_id === perfil.id)
+  // pedido esperando os 5s já aparece como decidido (por você)
+  const vistos = pedidos.map((p) =>
+    p.id in emEspera ? { ...p, status: emEspera[p.id] ? 'aprovado' : 'recusado', decidido_por: perfil.id } : p,
+  )
+  const pendentes = vistos.filter((p) => p.status === 'pendente').sort((a, b) => a.created_at.localeCompare(b.created_at))
+  const decididos = vistos.filter((p) => p.status !== 'pendente' && p.status !== 'cancelado').slice(0, 10)
+  const meus = vistos.filter((p) => p.solicitante_id === perfil.id)
 
   const Card = ({ p, decidir: podeDecidir }) => {
     const [cor, rotulo] = STATUS[p.status]
@@ -102,10 +142,10 @@ export function PedidosPage() {
         )}
         {p.status === 'pendente' && podeDecidir && (
           <div className="acoes">
-            <button className="btn perigo" disabled={decidindo === p.id} onClick={() => decidir(p, false)}>
+            <button className="btn perigo" onClick={() => decidir(p, false)}>
               Recusar
             </button>
-            <button className="btn ok" disabled={decidindo === p.id} onClick={() => decidir(p, true)}>
+            <button className="btn ok" onClick={() => decidir(p, true)}>
               Aprovar
             </button>
           </div>

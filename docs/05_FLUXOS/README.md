@@ -23,7 +23,7 @@ Escala → semana com meus turnos destacados + "Suas horas: 32h".
 Pedidos → **+ Novo pedido** → Folga (dia) ou Troca (meu turno + quem cobre) → **Enviar** → aparece amarelo "Aguardando".
 
 ## Aprovar pedido (gerente)
-Pedidos → aba Pendentes → **Aprovar** ou **Recusar** → escala atualiza sozinha.
+Pedidos → aba Pendentes → **Aprovar** ou **Recusar** → aviso com **Desfazer** por 5s → escala atualiza sozinha.
 
 ## Conversar com a equipe
 Compras ou Escala → botão **Chat** no topo (com número de novas) → escreve → **Enviar**. Mensagens dos outros aparecem sozinhas.
