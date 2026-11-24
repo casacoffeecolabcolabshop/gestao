@@ -36,6 +36,8 @@
 - Gerente e dono aprovam ou recusam cada turno que chega, com desfazer por 5 segundos. Recusar tira o turno da escala.
 - Só turno aprovado conta nas horas, entra em "Copiar semana anterior" e pode ter pedido de troca.
 - Sobreposição vale para turnos aguardando também (a pessoa não manda dois horários que se cruzam).
+- Quem mandou um turno pode **desistir** dele enquanto aguarda: botão **Desistir** no próprio turno (com desfazer), ou **Desfazer** no aviso logo depois de mandar. Turno já aprovado não se desiste: pede troca ou folga.
+- **Calendário** (Escala → Mês): o mês inteiro em grade, segunda a domingo, com quem trabalha em cada dia. Cada pessoa tem uma cor própria só para identificar (nunca verde, amarelo ou vermelho, que têm significado fixo). Turno aguardando aparece tracejado. Tocar no dia mostra os horários. Todo mundo vê.
 - Semana vai de segunda a domingo.
 - Turno pode passar da meia-noite (fim < início = termina no dia seguinte).
 - Mesma pessoa não pode ter dois turnos sobrepostos.

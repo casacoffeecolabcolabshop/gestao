@@ -165,3 +165,7 @@ form{display:flex;flex-direction:column;gap:14px}
 .turno-aprovar .acoes .btn.ok{flex:1}
 .turno-aviso{margin:0}
 .para-aprovar{margin-bottom:8px}
+/* desistir do turno que mandei (docs/03) */
+.turno-wrap+.turno-wrap,.turno-wrap+.turno-meu-aguardando,.turno-meu-aguardando+.turno-wrap,.turno-meu-aguardando+.turno-meu-aguardando{margin-top:6px}
+.turno-meu-aguardando{display:flex;flex-direction:column;align-items:stretch}
+.desistir{align-self:flex-end;min-height:36px;font-size:14px;color:var(--cor-alerta)}

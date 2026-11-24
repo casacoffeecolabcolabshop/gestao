@@ -36,3 +36,6 @@ Mesmo app, mesmas telas e textos; só muda a arrumação. Celular continua sendo
 - Formulários abrem como janela no centro da tela (no celular sobem do rodapé).
 - Chat abre como painel na lateral direita, sem cobrir a tela toda.
 - Avisos (toast) aparecem embaixo, centralizados no conteúdo.
+
+## Cores de pessoa (só no Calendário)
+Para o calendário ser ilustrativo, cada pessoa ganha uma cor fixa (calculada pelo id, sempre a mesma). A paleta evita verde, amarelo e vermelho para não confundir com ok, pendente e alerta. A cor nunca vem sozinha: sempre com a inicial ou o nome.

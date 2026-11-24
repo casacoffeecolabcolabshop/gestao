@@ -1,0 +1,40 @@
+/* Calendário do mês (docs/03). Cor de pessoa vem em --cor (docs/02: nunca verde/amarelo/vermelho). */
+.cal-legenda{list-style:none;margin:12px 0 0;padding:0;display:flex;flex-wrap:wrap;gap:6px 14px;font-size:14px;color:var(--cor-suave)}
+.cal-legenda li{display:flex;align-items:center;gap:6px}
+.cal-bolinha{flex:none;width:20px;height:20px;border-radius:50%;background:var(--cor,var(--cor-neutro));color:#fff;font-size:11px;font-weight:700;display:grid;place-items:center;line-height:1}
+.cal-bolinha.aguardando{background:transparent;border:2px dashed var(--cor-pendente)}
+
+.cal{margin-top:12px;background:var(--cor-superficie);border:1px solid var(--cor-linha);border-radius:var(--raio);overflow:hidden}
+.cal-linha{display:grid;grid-template-columns:repeat(7,minmax(0,1fr))}
+.cal-cabeca span{padding:8px 2px;text-align:center;font-size:12px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--cor-suave);border-bottom:1px solid var(--cor-linha)}
+.cal-dia{min-height:72px;min-width:0;padding:4px 3px 6px;background:none;border:0;border-right:1px solid var(--cor-linha);border-bottom:1px solid var(--cor-linha);display:flex;flex-direction:column;align-items:center;gap:4px;text-align:center}
+.cal-linha .cal-dia:last-child{border-right:0}
+.cal-linha:last-child .cal-dia{border-bottom:0}
+.cal-dia:hover{background:var(--cor-superficie-2)}
+.cal-dia.fora{opacity:.4}
+.cal-num{font-size:13px;font-weight:700;font-variant-numeric:tabular-nums;width:24px;height:24px;border-radius:50%;display:grid;place-items:center}
+.cal-dia.hoje .cal-num{background:var(--cor-primaria);color:var(--cor-primaria-texto)}
+.cal-gente{display:flex;flex-wrap:wrap;justify-content:center;gap:3px;width:100%}
+.cal-turno{display:flex;align-items:center;gap:4px;min-width:0}
+.cal-turno.aguardando .cal-bolinha{background:transparent;color:var(--cor);border:2px dashed var(--cor)}
+.cal-turno.meu .cal-bolinha{box-shadow:0 0 0 2px var(--cor-superficie),0 0 0 3px var(--cor-texto)}
+.cal-nome{display:none}
+.cal-vazio{margin:0 0 12px}
+.cal-fechar{margin-top:12px}
+.sheet .turno .cal-bolinha{width:28px;height:28px;font-size:13px}
+.abas-escala{margin:0 0 12px}
+.abas-escala a{flex:1;min-height:44px;display:grid;place-items:center;border-radius:9px;font-weight:600;color:var(--cor-suave);text-decoration:none}
+.abas-escala a[aria-current="page"]{background:var(--cor-superficie);color:var(--cor-texto);box-shadow:var(--sombra)}
+
+/* computador: nome e horário de cada pessoa dentro do dia */
+@media (min-width:960px){
+  .cal-dia{min-height:112px;align-items:stretch;padding:6px}
+  .cal-num{align-self:flex-start}
+  .cal-gente{flex-direction:column;flex-wrap:nowrap;align-items:stretch;gap:3px}
+  .cal-turno{background:color-mix(in srgb,var(--cor) 18%,transparent);border-left:3px solid var(--cor);border-radius:6px;padding:2px 6px}
+  .cal-turno.aguardando{background:transparent;border:1px dashed var(--cor);border-left-width:3px}
+  .cal-turno .cal-bolinha{display:none}
+  .cal-nome{display:block;font-size:13px;font-weight:600;text-align:left;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .cal-nome small{font-weight:400;color:var(--cor-suave)}
+  .cal-turno.meu .cal-nome{text-decoration:underline;text-underline-offset:2px}
+}

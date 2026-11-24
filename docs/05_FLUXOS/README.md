@@ -19,6 +19,12 @@ Escala → semana atual → toca no dia → **+ Turno** → pessoa, início, fim
 ## Mandar meus horários (funcionário)
 Escala → no dia → **+ Meu turno** → começo e fim → **Mandar** → aparece amarelo "Aguardando" até o gerente aprovar.
 
+## Desistir de um horário que mandei (funcionário)
+Escala → no meu turno "Aguardando" → **Desistir** → some (com desfazer). Ou **Desfazer** no aviso logo depois de mandar.
+
+## Ver o mês inteiro
+Escala → **Mês** (no topo) → calendário com as pessoas de cada dia → toca no dia → horários daquele dia.
+
 ## Aprovar horários da equipe (gerente)
 Escala → bloco **Turnos para aprovar** no topo → **Aprovar** ou **Recusar** (desfazer por 5s).
 

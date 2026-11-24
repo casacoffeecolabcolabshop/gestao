@@ -22,6 +22,8 @@ Ordem de construção. Cada item termina com tela funcionando no celular e RLS t
 16. [x] **Gerente ativa e desativa pessoas** (decisão do Matheus, 24/11): nunca o dono nem a si mesmo; papel continua só com o dono.
 17. [x] **Funcionário manda os próprios turnos, gerente aprova** (pedido da equipe, 24/11): turno "Aguardando" até gerente/dono aprovar.
 18. [x] **Criar conta com e-mail e senha** na tela de entrada, além do Google (pedido do Matheus, 24/11).
+19. [x] **Calendário do mês** dentro da Escala (Semana | Mês), com cor por pessoa (pedido do Matheus, 24/11).
+20. [x] **Desistir do turno que mandei** enquanto aguarda (pedido do Matheus, 24/11).
 
 ## Fase 2 (só se a equipe pedir)
 - Convite pelo próprio app (edge function)

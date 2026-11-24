@@ -9,6 +9,8 @@ import { DIAS_LONGOS, MESES_LONGOS, fmtDia, fmtSemana, hoje, pad, parseData, seg
 import { fmtHoras, minutosNaSemana, minutosNoMes, viraODia } from '../horas.js'
 import { listarTurnos, listarTurnosAguardando, aprovarTurno, criarTurno, editarTurno, apagarTurno, copiarSemana, apagarVarios } from '../services.js'
 import { TurnoForm } from './TurnoForm.jsx'
+import { EscalaAbas } from './EscalaAbas.jsx'
+import '../calendario.css'
 
 export function EscalaPage() {
   const { perfil, souGestor } = useAuth()
@@ -57,11 +59,34 @@ export function EscalaPage() {
   const podeMexer = (t) => souGestor || (t.profile_id === perfil.id && t.status === 'pendente')
 
   const salvar = async (d) => {
-    const { error } = form.id ? await editarTurno(form.id, d) : await criarTurno(d)
+    const novo = !form.id
+    const { data, error } = novo ? await criarTurno(d) : await editarTurno(form.id, d)
     if (error) return error
     setForm(null)
-    toast(souGestor ? 'Turno salvo' : 'Turno mandado. Aguardando o gerente aprovar.')
     carregar(true)
+    if (souGestor || !novo) return toast(souGestor ? 'Turno salvo' : 'Turno ajustado')
+    // funcionário acabou de mandar: dá para desfazer na hora (docs/03)
+    toast('Turno mandado. Aguardando o gerente aprovar.', {
+      desfazer: async () => {
+        const r = await apagarTurno(data.id)
+        if (r.error) toast(r.error, { erro: true })
+        carregar(true)
+      },
+    })
+  }
+
+  // quem mandou desiste do turno enquanto aguarda (docs/03), com desfazer
+  const desistir = async (t) => {
+    const { error } = await apagarTurno(t.id)
+    if (error) return toast(error, { erro: true })
+    carregar(true)
+    toast(`Você desistiu do turno de ${fmtDia(t.data)}`, {
+      desfazer: async () => {
+        const r = await criarTurno(t)
+        if (r.error) toast(r.error, { erro: true })
+        carregar(true)
+      },
+    })
   }
 
   const tirarDaEspera = (id) =>
@@ -165,6 +190,8 @@ export function EscalaPage() {
           <BotaoChat sala="escalas" />
         </div>
       </div>
+
+      <EscalaAbas />
 
       <div className="semana">
         <button onClick={() => setSemana(somarDias(semana, -7))} aria-label="Semana anterior">
@@ -301,13 +328,24 @@ export function EscalaPage() {
                         </>
                       )
                       const classe = `turno ${meu ? 'meu' : ''} ${t.status === 'pendente' ? 'aguardando' : ''}`
-                      return podeMexer(t) ? (
-                        <button key={t.id} className={classe} onClick={() => setForm(t)}>
+                      const turno = podeMexer(t) ? (
+                        <button className={classe} onClick={() => setForm(t)}>
                           {conteudo}
                         </button>
                       ) : (
-                        <div key={t.id} className={classe}>
-                          {conteudo}
+                        <div className={classe}>{conteudo}</div>
+                      )
+                      // meu turno aguardando: botão Desistir à vista, sem abrir o formulário
+                      return meu && t.status === 'pendente' ? (
+                        <div key={t.id} className="turno-meu-aguardando">
+                          {turno}
+                          <button className="link desistir" onClick={() => desistir(t)}>
+                            Desistir
+                          </button>
+                        </div>
+                      ) : (
+                        <div key={t.id} className="turno-wrap">
+                          {turno}
                         </div>
                       )
                     })

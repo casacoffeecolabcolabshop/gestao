@@ -7,7 +7,7 @@ import { AuthProvider, useAuth, Login, DefinirSenha } from './features/auth/inde
 import { sair } from './features/auth/services.js'
 import { ChatProvider } from './features/chat/index.js'
 import { ComprasPage } from './features/compras/index.js'
-import { EscalaPage, PedidosPage } from './features/escalas/index.js'
+import { CalendarioPage, EscalaPage, PedidosPage } from './features/escalas/index.js'
 import { EquipePage } from './features/equipe/index.js'
 
 export function App() {
@@ -53,6 +53,7 @@ function Portao() {
         <Route element={<Layout />}>
           <Route path="/compras" element={<ComprasPage />} />
           <Route path="/escala" element={<EscalaPage />} />
+          <Route path="/escala/mes" element={<CalendarioPage />} />
           <Route path="/pedidos" element={<PedidosPage />} />
           <Route path="/equipe" element={souGestor ? <EquipePage /> : <Navigate to="/compras" replace />} />
           <Route path="*" element={<Navigate to="/compras" replace />} />
