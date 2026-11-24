@@ -13,7 +13,8 @@
 | Pedir troca ou folga | ✅ | ✅ | ✅ |
 | Aprovar/recusar pedidos | ❌ | ✅ | ✅ |
 | Ver horas de todos | ❌ (só as suas) | ✅ | ✅ |
-| Ativar/desativar pessoa, mudar papel | ❌ | ❌ | ✅ |
+| Ativar/desativar pessoa (nunca o dono nem a si mesmo) | ❌ | ✅ | ✅ |
+| Mudar papel | ❌ | ❌ | ✅ |
 | Ler e escrever nos chats (compras e escala) | ✅ | ✅ | ✅ |
 | Apagar a própria mensagem | ✅ | ✅ | ✅ |
 | Apagar mensagem de outra pessoa | ❌ | ✅ | ✅ |
@@ -52,5 +53,5 @@
 
 ## Equipe
 - Qualquer pessoa entra com a conta do Google, sem convite, e já vira **funcionário ativo** com o nome do Google (ADR-008). Convite pelo painel e e-mail/senha continuam valendo.
-- O dono confere a tela Equipe e desativa quem não for da equipe.
+- Dono e gerente conferem a tela Equipe e desativam quem não for da equipe. Gerente não desativa o dono nem a si mesmo, não muda papel e não mexe no contato dos outros.
 - Pessoa desativada não entra mais, mas o histórico de turnos fica.

@@ -8,7 +8,7 @@ import { alterarPapel, ativarDesativar } from '../services.js'
 const PAPEL = { dono: 'Dono', gerente: 'Gerente', funcionario: 'Funcionário' }
 
 export function EquipePage() {
-  const { perfil, souDono } = useAuth()
+  const { perfil, souDono, souGestor } = useAuth()
   const { equipe, recarregarEquipe } = useOutletContext()
   const toast = useToast()
   const lista = [...equipe].sort((a, b) => b.ativo - a.ativo || a.nome.localeCompare(b.nome))
@@ -48,11 +48,13 @@ export function EquipePage() {
           <p>{equipe.filter((p) => p.ativo).length} pessoas ativas</p>
         </div>
       </div>
-      {!souDono && <p className="dica topo-dica">Só o dono muda papel ou desativa alguém.</p>}
+      {!souDono && <p className="dica topo-dica">Você ativa e desativa pessoas. Papel só o dono muda.</p>}
       {!lista.length && <EstadoVazio titulo="Ninguém na equipe ainda">Quem entrar com Google aparece aqui.</EstadoVazio>}
       <div className="lista">
         {lista.map((p) => {
           const eu = p.id === perfil.id
+          // docs/03: dono mexe em todos; gerente só ativa/desativa, nunca o dono nem a si mesmo
+          const podeAtivar = !eu && (souDono || (souGestor && p.papel !== 'dono'))
           return (
             <div key={p.id} className={`card ${p.ativo ? '' : 'apagado'}`}>
               <div className="corpo">
@@ -66,15 +68,17 @@ export function EquipePage() {
                 </span>
                 <span className="meta">{p.telefone || 'Sem telefone'}</span>
               </div>
-              {souDono && !eu && (
+              {podeAtivar && (
                 <div className="pessoa-acoes">
-                  <select aria-label={`Papel de ${p.nome}`} value={p.papel} disabled={!p.ativo} onChange={(e) => mudarPapel(p, e.target.value)}>
-                    {Object.entries(PAPEL).map(([v, l]) => (
-                      <option key={v} value={v}>
-                        {l}
-                      </option>
-                    ))}
-                  </select>
+                  {souDono && (
+                    <select aria-label={`Papel de ${p.nome}`} value={p.papel} disabled={!p.ativo} onChange={(e) => mudarPapel(p, e.target.value)}>
+                      {Object.entries(PAPEL).map(([v, l]) => (
+                        <option key={v} value={v}>
+                          {l}
+                        </option>
+                      ))}
+                    </select>
+                  )}
                   <button className={`btn peq ${p.ativo ? 'perigo' : ''}`} onClick={() => alternarAtivo(p)}>
                     {p.ativo ? 'Desativar' : 'Reativar'}
                   </button>
@@ -88,7 +92,7 @@ export function EquipePage() {
         <span>Gente nova</span>
       </div>
       <p className="dica">
-        Quem entra com Google aparece aqui como Funcionário, sem convite. Não reconhece alguém? Desative. O papel muda aqui.
+        Quem entra com Google aparece aqui como Funcionário, sem convite. Não reconhece alguém? Desative.
       </p>
     </>
   )

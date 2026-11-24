@@ -187,14 +187,34 @@ create policy perfis_ler on profiles for select using (meu_papel() is not null);
 create policy perfis_editar_proprio on profiles for update
   using (id = auth.uid() and meu_papel() is not null) with check (id = auth.uid());
 create policy perfis_dono on profiles for update using (meu_papel() = 'dono');
+-- gerente ativa/desativa (nunca o dono nem a si mesmo); o gatilho abaixo barra o resto
+create policy perfis_gerente_ativar on profiles for update
+  using (meu_papel() = 'gerente' and papel <> 'dono' and id <> auth.uid())
+  with check (papel <> 'dono' and id <> auth.uid());
 
--- só o dono muda papel ou ativo (nem a própria pessoa)
+-- papel só o dono; ativo: dono ou gerente (nunca o dono nem a si mesmo); contato só a própria pessoa
 create or replace function proteger_papel() returns trigger language plpgsql as $$
+declare
+  quem papel_t := meu_papel();
 begin
-  if (new.papel is distinct from old.papel or new.ativo is distinct from old.ativo)
-     and coalesce(meu_papel()::text, '') <> 'dono' and auth.uid() is not null then
-    raise exception 'Só o dono pode mudar papel ou ativar/desativar';
+  -- painel do Supabase / SQL direto (sem usuário logado) e dono: tudo liberado
+  if auth.uid() is null or quem = 'dono' then
+    return new;
   end if;
+
+  if new.papel is distinct from old.papel then
+    raise exception 'Só o dono muda o papel de alguém';
+  end if;
+
+  if new.ativo is distinct from old.ativo
+     and not (quem = 'gerente' and old.papel <> 'dono' and old.id <> auth.uid()) then
+    raise exception 'Só o dono ou o gerente ativam e desativam (nunca o dono nem a si mesmo)';
+  end if;
+
+  if old.id <> auth.uid() and (new.nome is distinct from old.nome or new.telefone is distinct from old.telefone) then
+    raise exception 'Só a própria pessoa muda o nome e o telefone';
+  end if;
+
   return new;
 end $$;
 create trigger trg_proteger_papel before update on profiles for each row execute function proteger_papel();

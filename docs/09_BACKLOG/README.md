@@ -19,7 +19,7 @@ Ordem de construção. Cada item termina com tela funcionando no celular e RLS t
 13. [ ] Teste com a equipe real por 1 semana, anotar em `memory/learnings.md`
 14. [x] **Entrar com Google** sem convite (ADR-008): conta nova vira funcionário ativo.
 15. [x] **Layout para computador** (a partir de 960px): navegação lateral, Compras com painel ao lado, Escala em grade, formulários no centro, chat na lateral (docs/02).
-16. [ ] **Gerente gerencia permissões** (pedido do Matheus, 24/11): hoje só o dono muda papel e ativa/desativa. Definir com o Matheus: gerente pode promover a gerente? Mexer no dono? Desativar? Muda RLS (`proteger_papel`, `perfis_dono`), docs/03 e testes.
+16. [x] **Gerente ativa e desativa pessoas** (decisão do Matheus, 24/11): nunca o dono nem a si mesmo; papel continua só com o dono.
 
 ## Fase 2 (só se a equipe pedir)
 - Convite pelo próprio app (edge function)

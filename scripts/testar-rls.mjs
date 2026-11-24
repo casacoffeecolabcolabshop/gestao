@@ -113,6 +113,24 @@ console.log('\n— Equipe')
   ok(promove.data?.length === 1, 'dono muda papel')
   await dono.c.from('profiles').update({ papel: 'funcionario' }).eq('id', joao.id)
 }
+{
+  // gerente ativa e desativa (docs/03), nunca o dono nem a si mesmo; não mexe no contato dos outros
+  const bia = await como('bia@casa.local')
+  const ativoDe = async (id) => (await dono.c.from('profiles').select('ativo').eq('id', id).single()).data?.ativo
+  const desativa = await carla.c.from('profiles').update({ ativo: false }).eq('id', bia.id).select()
+  const reativa = await carla.c.from('profiles').update({ ativo: true }).eq('id', bia.id).select()
+  ok(desativa.data?.length === 1 && reativa.data?.length === 1 && (await ativoDe(bia.id)) === true, 'gerente desativa e reativa funcionário')
+  await carla.c.from('profiles').update({ ativo: false }).eq('id', dono.id)
+  ok((await ativoDe(dono.id)) === true, 'gerente não desativa o dono')
+  await carla.c.from('profiles').update({ ativo: false }).eq('id', carla.id)
+  ok((await ativoDe(carla.id)) === true, 'gerente não desativa a si mesmo')
+  const telAntes = (await dono.c.from('profiles').select('telefone').eq('id', bia.id).single()).data?.telefone
+  await carla.c.from('profiles').update({ telefone: '(11) 00000-0000' }).eq('id', bia.id)
+  const telDepois = (await dono.c.from('profiles').select('telefone').eq('id', bia.id).single()).data?.telefone
+  ok(telAntes === telDepois, 'gerente não mexe no contato dos outros')
+  await joao.c.from('profiles').update({ ativo: false }).eq('id', bia.id)
+  ok((await ativoDe(bia.id)) === true, 'funcionário não desativa ninguém')
+}
 
 console.log('\n— Chat')
 {
