@@ -169,3 +169,14 @@ form{display:flex;flex-direction:column;gap:14px}
 .turno-wrap+.turno-wrap,.turno-wrap+.turno-meu-aguardando,.turno-meu-aguardando+.turno-wrap,.turno-meu-aguardando+.turno-meu-aguardando{margin-top:6px}
 .turno-meu-aguardando{display:flex;flex-direction:column;align-items:stretch}
 .desistir{align-self:flex-end;min-height:36px;font-size:14px;color:var(--cor-alerta)}
+/* confirmação (exceção, docs/02) */
+.veu.veu-centro{align-items:center;padding:24px}
+.confirmar{background:var(--cor-superficie);width:100%;max-width:400px;border-radius:18px;padding:20px;box-shadow:var(--sombra)}
+.confirmar h2{font-family:var(--fonte-titulo);font-size:20px;margin:0 0 8px}
+.confirmar p{margin:0 0 16px;color:var(--cor-suave)}
+.confirmar .acoes .btn{flex:1}
+.btn.perigo-cheio{background:var(--cor-alerta);color:#fff;border-color:var(--cor-alerta)}
+/* desfazer pedido no card de compras */
+.card .card-principal{flex:1;min-width:0;display:flex;flex-direction:column;gap:6px}
+.desfazer-pedido{align-self:flex-start;min-height:36px;padding:0;font-size:14px;color:var(--cor-alerta)}
+@media (prefers-reduced-motion:no-preference){.confirmar{animation:sobe .18s ease-out}}

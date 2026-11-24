@@ -39,3 +39,6 @@ Mesmo app, mesmas telas e textos; só muda a arrumação. Celular continua sendo
 
 ## Cores de pessoa (só no Calendário)
 Para o calendário ser ilustrativo, cada pessoa ganha uma cor fixa (calculada pelo id, sempre a mesma). A paleta evita verde, amarelo e vermelho para não confundir com ok, pendente e alerta. A cor nunca vem sozinha: sempre com a inicial ou o nome.
+
+## Confirmação (exceção)
+O padrão é desfazer, não perguntar. Única confirmação do app: **Desfazer pedido** em Compras (pedido do Matheus, 24/11), com o componente `Confirmar`: janela curta, pergunta direta, botão de ação em vermelho e **Voltar**.

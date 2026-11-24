@@ -24,6 +24,7 @@ Ordem de construção. Cada item termina com tela funcionando no celular e RLS t
 18. [x] **Criar conta com e-mail e senha** na tela de entrada, além do Google (pedido do Matheus, 24/11).
 19. [x] **Calendário do mês** dentro da Escala (Semana | Mês), com cor por pessoa (pedido do Matheus, 24/11).
 20. [x] **Desistir do turno que mandei** enquanto aguarda (pedido do Matheus, 24/11).
+21. [x] **Desfazer pedido de compra** com confirmação (pedido do Matheus, 24/11).
 
 ## Fase 2 (só se a equipe pedir)
 - Convite pelo próprio app (edge function)

@@ -11,6 +11,7 @@ import { haQuanto } from '../../../lib/datas.js'
 import { useComputador } from '../../../lib/useComputador.js'
 import { listarItens, adicionarItem, adicionarVarios, editarItem, marcarComoComprado, desfazerCompra, apagarItem, recriarItem, assinarItens } from '../services.js'
 import { ItemForm } from './ItemForm.jsx'
+import { Confirmar } from '../../../components/Confirmar.jsx'
 import { ListaForm } from './ListaForm.jsx'
 import { PainelComprar } from './PainelComprar.jsx'
 import '../compras.css'
@@ -28,6 +29,7 @@ export function ComprasPage() {
   const [verComprados, setVerComprados] = useState(false)
   const [varios, setVarios] = useState(false)
   const [painel, setPainel] = useState(false)
+  const [desfazendo, setDesfazendo] = useState(null) // item esperando a confirmação de "Desfazer pedido"
   const computador = useComputador() // no computador o painel fica fixo ao lado (docs/02)
   const espera = useRef()
 
@@ -89,6 +91,16 @@ export function ComprasPage() {
     })
   }
 
+  // Desfazer pedido (docs/03): só depois da confirmação
+  const desfazerPedido = async () => {
+    const it = desfazendo
+    const { error } = await apagarItem(it.id)
+    setDesfazendo(null)
+    if (error) return toast(error, { erro: true })
+    toast(`Pedido de ${it.nome} desfeito`)
+    carregar(true)
+  }
+
   const comprar = async (it) => {
     setItens((l) => l.map((x) => (x.id === it.id ? { ...x, status: 'comprado', comprado_por: perfil.id, comprado_em: new Date().toISOString() } : x)))
     const { error } = await marcarComoComprado(it.id, perfil.id)
@@ -136,13 +148,20 @@ export function ComprasPage() {
     )
     return (
       <div className={`card ${it.urgente && !feito ? 'urgente' : ''} ${feito ? 'feito' : ''}`}>
-        {!feito && podeEditar(it) ? (
-          <button className="corpo" onClick={() => setForm(it)} aria-label={`Editar ${it.nome}`}>
-            {corpo}
-          </button>
-        ) : (
-          <div className="corpo">{corpo}</div>
-        )}
+        <div className="card-principal">
+          {!feito && podeEditar(it) ? (
+            <button className="corpo" onClick={() => setForm(it)} aria-label={`Editar ${it.nome}`}>
+              {corpo}
+            </button>
+          ) : (
+            <div className="corpo">{corpo}</div>
+          )}
+          {!feito && it.criado_por === perfil.id && (
+            <button className="link desfazer-pedido" onClick={() => setDesfazendo(it)}>
+              Desfazer pedido
+            </button>
+          )}
+        </div>
         {souGestor && (
           <button
             className={`check ${feito ? 'on' : ''}`}
@@ -226,6 +245,15 @@ export function ComprasPage() {
             setForm({})
           }}
           onFechar={() => setVarios(false)}
+        />
+      )}
+      {desfazendo && (
+        <Confirmar
+          titulo={`Desfazer o pedido de ${desfazendo.nome}?`}
+          texto="Ele sai da lista de compras."
+          acao="Desfazer pedido"
+          onConfirmar={desfazerPedido}
+          onVoltar={() => setDesfazendo(null)}
         />
       )}
       {painel && !computador && (
