@@ -15,8 +15,8 @@
 - [x] Testado: usuário desativado não lê nada
 - [x] Cadastro aberto de propósito (ADR-008, risco aceito); dono confere a tela Equipe
 - [x] `.env` no `.gitignore`, só `.env.example` versionado
-- [ ] Rota protegida checa sessão antes de renderizar
-- [ ] Inputs validados (tamanho máximo, campos obrigatórios, hora fim ≠ início)
+- [x] Rota protegida checa sessão antes de renderizar (revisão 24/11: sem login cai no login; funcionário em /equipe volta para Compras; desativado vê "Acesso desativado")
+- [x] Inputs validados (revisão 24/11: item duplicado, nome vazio, senha curta/diferente, turno sem pessoa e sobreposto, folga sem dia ou no passado)
 - [x] `npm audit` sem crítica (2 moderadas no react-router adiadas, `memory/bugs.md` B-001)
 
 ## LGPD
