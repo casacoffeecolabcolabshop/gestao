@@ -29,8 +29,13 @@ ok(!joao.error && !carla.error && !dono.error, 'equipe de teste entra')
 {
   const { error } = await anon.auth.signUp({ email: 'estranho@x.com', password: 'abcd12345' })
   ok(Boolean(error), 'estranho não consegue se cadastrar (cadastro público desligado)')
-  const { data } = await anon.from('shopping_items').select('id')
-  ok(data?.length === 0, 'sem login não lê nada')
+  // sem login: barrado pela permissão da API (migration permissoes_api) ou, se ela existir, pelo RLS. Nos dois casos não lê nada.
+  let anonLeu = 0
+  for (const t of ['profiles', 'shopping_items', 'shifts', 'shift_requests', 'chat_messages']) {
+    const r = await anon.from(t).select('id')
+    if (!r.error) anonLeu += r.data.length
+  }
+  ok(anonLeu === 0, 'sem login não lê nada')
 }
 {
   const tabelas = ['profiles', 'shopping_items', 'shifts', 'shift_requests', 'chat_messages']

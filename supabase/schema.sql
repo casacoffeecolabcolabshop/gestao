@@ -227,3 +227,18 @@ create policy chat_apagar on chat_messages for delete
 -- ========== realtime (lista e chat atualizam sozinhos; respeita o RLS) ==========
 alter publication supabase_realtime add table shopping_items;
 alter publication supabase_realtime add table chat_messages;
+
+-- ========== permissões da API (migration 20261124010000_permissoes_api) ==========
+
+grant usage on schema public to authenticated;
+
+grant select, insert, update, delete
+  on profiles, shopping_items, shifts, shift_requests, chat_messages
+  to authenticated;
+
+grant select on v_horas_semana to authenticated;
+
+grant execute on function meu_papel() to authenticated;
+grant execute on function sou_gestor() to authenticated;
+grant execute on function nome_normalizado(text) to authenticated;
+grant execute on function intervalo_turno(date, time, time) to authenticated;
