@@ -74,6 +74,25 @@ export async function marcarComoComprado(id, meuId) {
   )
 }
 
+// Dar baixa em vários de uma vez (docs/03). Devolve os ids que mudaram (o RLS barra quem não pode).
+export async function marcarVariosComoComprados(ids, meuId) {
+  if (!ids.length) return falha('Marque pelo menos um item')
+  const r = await supabase
+    .from('shopping_items')
+    .update({ status: 'comprado', comprado_por: meuId, comprado_em: new Date().toISOString() })
+    .in('id', ids)
+    .eq('status', 'pendente')
+    .select('id')
+  if (r.error) return de(r)
+  return r.data.length ? ok(r.data.map((x) => x.id)) : falha('Nenhum item mudou. Você pode não ter permissão para dar baixa.')
+}
+
+export async function desfazerVarios(ids) {
+  return de(
+    await supabase.from('shopping_items').update({ status: 'pendente', comprado_por: null, comprado_em: null }).in('id', ids).select('id'),
+  )
+}
+
 export async function desfazerCompra(id) {
   return de(
     await supabase

@@ -9,7 +9,9 @@ import { IconeCheck } from '../../../components/Icones.jsx'
 import { BotaoChat } from '../../chat/index.js'
 import { haQuanto } from '../../../lib/datas.js'
 import { useComputador } from '../../../lib/useComputador.js'
-import { listarItens, adicionarItem, adicionarVarios, editarItem, marcarComoComprado, desfazerCompra, apagarItem, recriarItem, assinarItens } from '../services.js'
+import { listarItens, adicionarItem, adicionarVarios, editarItem, marcarComoComprado, marcarVariosComoComprados, desfazerCompra, desfazerVarios, apagarItem, recriarItem, assinarItens } from '../services.js'
+import { agruparParaComprar } from '../lista.js'
+import { baixarPdfCompras } from '../pdf.js'
 import { ItemForm } from './ItemForm.jsx'
 import { Confirmar } from '../../../components/Confirmar.jsx'
 import { ListaForm } from './ListaForm.jsx'
@@ -30,6 +32,8 @@ export function ComprasPage() {
   const [varios, setVarios] = useState(false)
   const [painel, setPainel] = useState(false)
   const [desfazendo, setDesfazendo] = useState(null) // item esperando a confirmação de "Desfazer pedido"
+  // Selecionar (docs/03): escolher só o que vai comprar -> PDF desses e, para gerente/dono, dar baixa de uma vez
+  const [selecao, setSelecao] = useState(null) // null = fora do modo; Set de ids no modo
   const computador = useComputador() // no computador o painel fica fixo ao lado (docs/02)
   const espera = useRef()
 
@@ -128,6 +132,54 @@ export function ComprasPage() {
   const comprados = itens.filter((i) => i.status === 'comprado').sort((a, b) => b.comprado_em.localeCompare(a.comprado_em))
   const urgentes = pendentes.filter((i) => i.urgente).length
 
+  const alternarSel = (id) =>
+    setSelecao((s) => {
+      const n = new Set(s)
+      n.has(id) ? n.delete(id) : n.add(id)
+      return n
+    })
+  const darBaixa = async () => {
+    const ids = [...selecao].filter((id) => pendentes.some((p) => p.id === id))
+    const { data, error } = await marcarVariosComoComprados(ids, perfil.id)
+    if (error) return toast(error, { erro: true })
+    setSelecao(null)
+    carregar(true)
+    toast(`${data.length} ${data.length === 1 ? 'item comprado' : 'itens comprados'}`, {
+      desfazer: async () => {
+        const r = await desfazerVarios(data)
+        if (r.error) toast(r.error, { erro: true })
+        carregar(true)
+      },
+    })
+  }
+  const pdfDaSelecao = async () => {
+    try {
+      await baixarPdfCompras(agruparParaComprar(pendentes.filter((p) => selecao.has(p.id))))
+      toast('PDF baixado')
+    } catch {
+      toast('Não deu para gerar o PDF. Tente de novo.', { erro: true })
+    }
+  }
+
+  // card no modo Selecionar: o item inteiro marca/desmarca (função, não componente: não remonta a cada toque)
+  const cardSel = (it) => {
+    const marcado = selecao.has(it.id)
+    const meta = [it.quantidade, it.tipo === 'produto' ? 'Produto' : 'Insumo'].filter(Boolean).join(' · ')
+    return (
+      <label key={it.id} className={`card sel ${marcado ? 'marcado' : ''} ${it.urgente ? 'urgente' : ''}`}>
+        <input type="checkbox" checked={marcado} onChange={() => alternarSel(it.id)} aria-label={`Selecionar ${it.nome}`} />
+        <span className="corpo">
+          <span className="linha">
+            <span className="titulo">{it.nome}</span>
+            {it.urgente && <Etiqueta cor="alerta">Urgente</Etiqueta>}
+          </span>
+          {meta && <span className="meta">{meta}</span>}
+          {it.observacao && <span className="meta">“{it.observacao}”</span>}
+        </span>
+      </label>
+    )
+  }
+
   const Card = ({ it }) => {
     const feito = it.status === 'comprado'
     const meta = [it.quantidade, it.tipo === 'produto' ? 'Produto' : 'Insumo'].filter(Boolean).join(' · ')
@@ -185,7 +237,12 @@ export function ComprasPage() {
           )}
         </div>
         <div className="acoes-topo">
-          {estado === 'ok' && !computador && (
+          {estado === 'ok' && pendentes.length > 0 && !selecao && (
+            <button className="btn peq" onClick={() => setSelecao(new Set())}>
+              Selecionar
+            </button>
+          )}
+          {estado === 'ok' && !computador && !selecao && (
             <button className="btn peq btn-para-comprar" onClick={() => setPainel(true)}>
               Para comprar
             </button>
@@ -199,14 +256,31 @@ export function ComprasPage() {
       {estado === 'ok' && (
         <div className="compras-grade">
           <div className="compras-lista">
+          {selecao && (
+            <div className="sel-barra">
+              <span>
+                <b>{selecao.size}</b> de {pendentes.length} {selecao.size === 1 ? 'selecionado' : 'selecionados'}
+              </span>
+              <button className="link" onClick={() => setSelecao(selecao.size === pendentes.length ? new Set() : new Set(pendentes.map((p) => p.id)))}>
+                {selecao.size === pendentes.length ? 'Desmarcar todos' : 'Marcar todos'}
+              </button>
+              <button className="btn peq" onClick={pdfDaSelecao} disabled={!selecao.size}>
+                PDF
+              </button>
+              <button className="btn peq" onClick={() => setSelecao(null)}>
+                Cancelar
+              </button>
+            </div>
+          )}
+          {selecao && !souGestor && <p className="dica sel-dica">Escolha o que você vai comprar e baixe o PDF. Quem dá baixa é o gerente.</p>}
           {pendentes.length ? (
-            <div className="lista">{pendentes.map((it) => <Card key={it.id} it={it} />)}</div>
+            <div className="lista">{pendentes.map((it) => (selecao ? cardSel(it) : <Card key={it.id} it={it} />))}</div>
           ) : (
             <EstadoVazio titulo="Tudo comprado">
               Acabou alguma coisa? Toque em <b>+ Acabou algo</b>.
             </EstadoVazio>
           )}
-          {comprados.length > 0 && (
+          {comprados.length > 0 && !selecao && (
             <>
               <div className="secao">
                 <span>Comprados nos últimos 7 dias ({comprados.length})</span>
@@ -224,7 +298,19 @@ export function ComprasPage() {
         </div>
       )}
 
-      <AcaoPrincipal onClick={() => setForm({})}>+ Acabou algo</AcaoPrincipal>
+      {selecao ? (
+        souGestor ? (
+          <AcaoPrincipal onClick={darBaixa} desligado={!selecao.size}>
+            {selecao.size ? `Marcar ${selecao.size} como ${selecao.size === 1 ? 'comprado' : 'comprados'}` : 'Marque o que foi comprado'}
+          </AcaoPrincipal>
+        ) : (
+          <AcaoPrincipal onClick={pdfDaSelecao} desligado={!selecao.size}>
+            {selecao.size ? `Baixar PDF dos ${selecao.size}` : 'Marque o que vai comprar'}
+          </AcaoPrincipal>
+        )
+      ) : (
+        <AcaoPrincipal onClick={() => setForm({})}>+ Acabou algo</AcaoPrincipal>
+      )}
       {form && (
         <ItemForm
           item={form.id ? form : null}

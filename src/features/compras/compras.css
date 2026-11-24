@@ -25,3 +25,12 @@
 
 /* Botão "Vários de uma vez" no formulário de um item */
 .link-varios{display:block;width:100%;margin-top:12px;background:none;border:0;min-height:44px;color:var(--cor-suave);font-weight:600;text-decoration:underline;font-size:15px}
+
+/* modo Selecionar (docs/03): escolher só o que vai comprar */
+.sel-barra{position:sticky;top:0;z-index:5;display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px;background:var(--cor-fundo);padding:8px 0 10px}
+.sel-barra>span{flex:1;min-width:120px}
+.sel-barra .link{min-height:40px}
+.sel-dica{margin:0 0 10px}
+.card.sel{cursor:pointer;gap:14px}
+.card.sel input{flex:none;width:26px;height:26px;accent-color:var(--cor-ok);margin:0}
+.card.sel.marcado{border-color:var(--cor-ok);background:var(--cor-ok-fundo)}

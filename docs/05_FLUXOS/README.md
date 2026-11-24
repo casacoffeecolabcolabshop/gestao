@@ -11,6 +11,7 @@ Compras → botão **Para comprar** no topo → painel com Urgentes, Insumos e P
 
 ## Fazer as compras (gerente)
 Compras → lista de pendentes → toca no item → fica verde "Comprado" (com desfazer por 5s).
+Voltou do mercado com várias coisas: Compras → **Dar baixa** → marca os itens comprados (ou **Marcar todos**) → **Marcar N como comprados** (desfazer por 5s).
 Ou, no mercado: Compras → **Para comprar** → toca no check de cada item conforme pega → fica verde e riscado, topo mostra "3 de 9 comprados". O que não comprou continua pendente para a próxima vez.
 
 ## Montar a escala (gerente)
