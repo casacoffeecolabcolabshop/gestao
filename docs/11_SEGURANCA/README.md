@@ -1,0 +1,23 @@
+# 11 Segurança
+
+## Riscos reais deste app
+| Risco | Proteção |
+|---|---|
+| Funcionário mexe na escala ou aprova o próprio pedido | RLS por papel + RPC confere papel (ADR-004) |
+| Estranho cria conta | Cadastro público desligado (ADR-003) |
+| Ex-funcionário continua entrando | Dono desativa; RLS bloqueia quem tem `ativo = false` |
+| Chave vazada | Só `anon` no front; `.env` fora do git; `service_role` nunca no app |
+| Vazar telefone da equipe | Só dados mínimos; nada de log com dado pessoal |
+
+## Checklist antes de ir para produção
+- [ ] RLS ligado em todas as tabelas (`profiles`, `shopping_items`, `shifts`, `shift_requests`)
+- [ ] Testado: funcionário não consegue criar turno nem aprovar pedido (via console, não só pela tela)
+- [ ] Testado: usuário desativado não lê nada
+- [ ] Cadastro público desligado no Supabase
+- [ ] `.env` no `.gitignore`, só `.env.example` versionado
+- [ ] Rota protegida checa sessão antes de renderizar
+- [ ] Inputs validados (tamanho máximo, campos obrigatórios, hora fim ≠ início)
+- [ ] `npm audit` sem crítica
+
+## LGPD
+Só nome, e-mail, telefone e turnos. Na saída de alguém: desativar no mesmo dia; apagar contato se pedir.
