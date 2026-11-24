@@ -4,7 +4,8 @@
 | Ação | Funcionário | Gerente | Dono |
 |---|---|---|---|
 | Ver lista de compras | ✅ | ✅ | ✅ |
-| Adicionar item na lista | ✅ | ✅ | ✅ |
+| Adicionar item na lista (um ou vários de uma vez) | ✅ | ✅ | ✅ |
+| Ver painel "Para comprar" e baixar o PDF | ✅ | ✅ | ✅ |
 | Editar/apagar item que criou (enquanto pendente) | ✅ | ✅ | ✅ |
 | Marcar item como comprado / apagar qualquer item | ❌ | ✅ | ✅ |
 | Ver escala da semana (todos) | ✅ | ✅ | ✅ |
@@ -23,6 +24,8 @@
 - Item igual já pendente (mesmo nome, ignorando maiúscula/acento): avisar "Já está na lista" e não duplicar.
 - Comprados somem da lista principal após 7 dias (continuam no banco).
 - Ordem da lista: urgentes primeiro, depois mais antigos.
+- **Vários de uma vez:** a pessoa escreve ou cola uma lista, um item por linha. `Nome - quantidade` ou `Nome: quantidade` (quantidade opcional). Marcadores no começo da linha (`-`, `*`, `•`, `1.`, `[ ]`) e linhas vazias são ignorados. Linha repetida na própria lista entra uma vez só. O tipo (insumo/produto) e o urgente valem para todos os itens colados. Máximo 50 itens por vez. Item que já está pendente é pulado e a pessoa vê quantos entraram e quantos já estavam na lista.
+- **Painel "Para comprar":** mostra só os pendentes, em três grupos nesta ordem: Urgentes, Insumos, Produtos (dentro de cada grupo, mais antigos primeiro). Cada item mostra nome, quantidade e observação. Gerente e dono têm um check em cada item para marcar como comprado ali mesmo, um por vez (a compra pode ser feita aos poucos). O item marcado fica verde e riscado no painel até ele ser fechado, pode ser desmarcado, e o topo mostra o progresso ("3 de 9 comprados"). Funcionário vê o painel sem os checks. Dentro do painel, botão **Baixar PDF** gera o arquivo `compras-DD-MM-AAAA.pdf` no próprio aparelho, só com o que ainda falta, nos mesmos grupos, data/hora e um quadradinho para riscar à mão. Nada é enviado para fora do app.
 
 ## Escalas
 - Turno: pessoa, data, hora início, hora fim, observação opcional (ex. "abre a loja").

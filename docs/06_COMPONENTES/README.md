@@ -11,3 +11,4 @@ Componentes base listados em `docs/02_DESIGN_SYSTEM/`. Aqui entra a ficha de cad
 | `Sheet` | Pronto: formulário que sobe do rodapé |
 | `AcaoPrincipal` | Pronto: botão grande no rodapé, acima da navegação |
 | `BotaoChat`, `ChatPainel` | Prontos (`src/features/chat/`) |
+| `ListaForm`, `PainelComprar` | Prontos (`src/features/compras/`): colar vários itens; painel do que falta com Baixar PDF |

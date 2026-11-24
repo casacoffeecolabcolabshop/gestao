@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { Sheet } from '../../../components/Sheet.jsx'
 
-export function ItemForm({ item, onSalvar, onApagar, onFechar }) {
+export function ItemForm({ item, onSalvar, onApagar, onVarios, onFechar }) {
   const [d, setD] = useState({
     nome: item?.nome || '',
     quantidade: item?.quantidade || '',
@@ -70,6 +70,11 @@ export function ItemForm({ item, onSalvar, onApagar, onFechar }) {
             {item ? 'Salvar' : 'Adicionar'}
           </button>
         </div>
+        {!item && onVarios && (
+          <button type="button" className="link-varios" onClick={onVarios}>
+            Vários de uma vez
+          </button>
+        )}
       </form>
     </Sheet>
   )

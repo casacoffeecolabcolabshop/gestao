@@ -13,6 +13,7 @@ Ordem de construção. Cada item termina com tela funcionando no celular e RLS t
 8. [x] **Pedidos:** folga e troca, cancelar, aprovar/recusar
 9. [x] **Equipe:** lista, mudar papel, desativar (dono)
 10. [x] **Chat:** um de compras e um de escala, ao vivo (ADR-005)
+10b. [x] **Compras:** colar vários itens de uma vez + painel "Para comprar" com Baixar PDF (ADR-007)
 11. [ ] Testes locais completos (checklist de `docs/11_SEGURANCA`)
 12. [ ] Subir: projeto Supabase na nuvem + Vercel
 13. [ ] Teste com a equipe real por 1 semana, anotar em `memory/learnings.md`

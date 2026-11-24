@@ -11,3 +11,4 @@ Decisão que afeta mais de uma parte do sistema vira ADR. ADR aceito não se edi
 | ADR-004 | Permissões por papel direto no banco (RLS) | Aceito | 2026-11-24 |
 | ADR-005 | Chat da equipe (compras e escala) com Supabase Realtime | Aceito | 2026-11-24 |
 | ADR-006 | Desenvolvimento e testes 100% locais (Supabase CLI + Docker) antes da nuvem | Aceito | 2026-11-24 |
+| ADR-007 | PDF da lista de compras gerado no aparelho com jsPDF (grátis, sem servidor) | Aceito | 2026-11-24 |

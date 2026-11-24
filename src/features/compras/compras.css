@@ -1,0 +1,27 @@
+/* Vários de uma vez */
+.campo textarea.lista-texto{min-height:160px;line-height:1.4}
+
+/* Painel "Para comprar" */
+.btn-para-comprar{white-space:nowrap}
+.painel-total{margin:-8px 0 8px;color:var(--cor-suave);font-size:15px}
+.painel-grupo{margin:12px 0 4px}
+.painel-grupo h3{margin:0 0 6px;font-size:13px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--cor-suave)}
+.painel-grupo h3.urgente{color:var(--cor-alerta)}
+.painel-grupo h3 span{font-weight:600}
+.painel-grupo ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column}
+.painel-grupo li{display:flex;align-items:center;gap:12px;padding:8px 0;border-bottom:1px solid var(--cor-linha);min-height:56px}
+.painel-grupo li .texto{flex:1;min-width:0;display:flex;flex-wrap:wrap;align-items:baseline;gap:2px 8px}
+.painel-grupo li.feito .nome{text-decoration:line-through;color:var(--cor-ok)}
+.painel-grupo li.feito .qtd,.painel-grupo li.feito .obs{opacity:.6}
+.painel-grupo li .nome{font-weight:600;font-size:17px;overflow-wrap:anywhere}
+.painel-grupo li .qtd{color:var(--cor-suave);font-size:15px}
+.painel-grupo li .obs{flex-basis:100%;color:var(--cor-suave);font-size:14px;overflow-wrap:anywhere}
+.painel-total.com-progresso{color:var(--cor-ok);font-weight:700}
+.painel-progresso{height:6px;border-radius:3px;background:var(--cor-ok-fundo);overflow:hidden;margin:0 0 8px}
+.painel-progresso span{display:block;height:100%;background:var(--cor-ok);transition:width .2s ease-out}
+.painel-dica{margin:0 0 4px}
+.painel-acoes .btn{flex:1}
+.painel-acoes{position:sticky;bottom:0;background:var(--cor-superficie);padding:12px 0 4px;margin-top:8px}
+
+/* Botão "Vários de uma vez" no formulário de um item */
+.link-varios{display:block;width:100%;margin-top:12px;background:none;border:0;min-height:44px;color:var(--cor-suave);font-weight:600;text-decoration:underline;font-size:15px}

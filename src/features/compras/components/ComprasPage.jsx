@@ -8,8 +8,11 @@ import { Etiqueta } from '../../../components/Etiqueta.jsx'
 import { IconeCheck } from '../../../components/Icones.jsx'
 import { BotaoChat } from '../../chat/index.js'
 import { haQuanto } from '../../../lib/datas.js'
-import { listarItens, adicionarItem, editarItem, marcarComoComprado, desfazerCompra, apagarItem, recriarItem, assinarItens } from '../services.js'
+import { listarItens, adicionarItem, adicionarVarios, editarItem, marcarComoComprado, desfazerCompra, apagarItem, recriarItem, assinarItens } from '../services.js'
 import { ItemForm } from './ItemForm.jsx'
+import { ListaForm } from './ListaForm.jsx'
+import { PainelComprar } from './PainelComprar.jsx'
+import '../compras.css'
 
 // urgentes primeiro, depois os mais antigos (docs/03)
 const ordemPendentes = (a, b) => b.urgente - a.urgente || a.created_at.localeCompare(b.created_at)
@@ -22,6 +25,8 @@ export function ComprasPage() {
   const [estado, setEstado] = useState('carregando')
   const [form, setForm] = useState(null) // null | {} (novo) | item
   const [verComprados, setVerComprados] = useState(false)
+  const [varios, setVarios] = useState(false)
+  const [painel, setPainel] = useState(false)
   const espera = useRef()
 
   const carregar = useCallback(async (silencioso) => {
@@ -51,6 +56,19 @@ export function ComprasPage() {
     if (error) return error
     setForm(null)
     toast(form.id ? 'Salvo' : 'Adicionado')
+    carregar(true)
+  }
+
+  const salvarVarios = async (lista, opcoes) => {
+    const { data, error } = await adicionarVarios(lista, opcoes)
+    if (error) {
+      carregar(true)
+      return error
+    }
+    setVarios(false)
+    const { adicionados: a, jaEstavam: j } = data
+    const partes = [a && `${a} adicionado${a > 1 ? 's' : ''}`, j && `${j} já estava${j > 1 ? 'm' : ''} na lista`].filter(Boolean)
+    toast(partes.join(' · '))
     carregar(true)
   }
 
@@ -145,7 +163,14 @@ export function ComprasPage() {
             <p>{pendentes.length ? `${pendentes.length} para comprar${urgentes ? ` · ${urgentes} urgente${urgentes > 1 ? 's' : ''}` : ''}` : 'Nada pendente'}</p>
           )}
         </div>
-        <BotaoChat sala="compras" />
+        <div className="acoes-topo">
+          {estado === 'ok' && (
+            <button className="btn peq btn-para-comprar" onClick={() => setPainel(true)}>
+              Para comprar
+            </button>
+          )}
+          <BotaoChat sala="compras" />
+        </div>
       </div>
 
       {estado === 'carregando' && <Carregando />}
@@ -172,7 +197,31 @@ export function ComprasPage() {
       )}
 
       <AcaoPrincipal onClick={() => setForm({})}>+ Acabou algo</AcaoPrincipal>
-      {form && <ItemForm item={form.id ? form : null} onSalvar={salvar} onApagar={apagar} onFechar={() => setForm(null)} />}
+      {form && (
+        <ItemForm
+          item={form.id ? form : null}
+          onSalvar={salvar}
+          onApagar={apagar}
+          onVarios={() => {
+            setForm(null)
+            setVarios(true)
+          }}
+          onFechar={() => setForm(null)}
+        />
+      )}
+      {varios && (
+        <ListaForm
+          onSalvar={salvarVarios}
+          onUmItem={() => {
+            setVarios(false)
+            setForm({})
+          }}
+          onFechar={() => setVarios(false)}
+        />
+      )}
+      {painel && (
+        <PainelComprar itens={itens} podeMarcar={souGestor} onComprar={comprar} onDesmarcar={desmarcar} onFechar={() => setPainel(false)} />
+      )}
     </>
   )
 }

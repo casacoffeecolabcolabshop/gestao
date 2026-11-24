@@ -1,5 +1,6 @@
 import { supabase } from '../../lib/supabase.js'
-import { de, ok, falha } from '../../lib/resultado.js'
+import { de, ok, falha, traduzirErro } from '../../lib/resultado.js'
+import { MAX_ITENS_POR_VEZ } from './lista.js'
 
 const CAMPOS = 'id, nome, quantidade, tipo, observacao, urgente, status, criado_por, comprado_por, comprado_em, created_at'
 
@@ -35,6 +36,25 @@ export async function adicionarItem(dados) {
   const erro = validar(dados)
   if (erro) return falha(erro)
   return de(await supabase.from('shopping_items').insert(limpar(dados)).select(CAMPOS).single())
+}
+
+// Vários de uma vez (docs/03): valida tudo antes, grava um por um para pular só o que já está pendente.
+export async function adicionarVarios(itens, { tipo, urgente }) {
+  if (!itens.length) return falha('Escreva pelo menos um item, um por linha')
+  if (itens.length > MAX_ITENS_POR_VEZ) return falha(`Máximo ${MAX_ITENS_POR_VEZ} itens por vez`)
+  for (const it of itens) {
+    const erro = validar({ ...it, tipo })
+    if (erro) return falha(`${it.nome.slice(0, 30)}: ${erro}`)
+  }
+  let adicionados = 0
+  let jaEstavam = 0
+  for (const it of itens) {
+    const r = await supabase.from('shopping_items').insert(limpar({ ...it, tipo, urgente })).select('id').single()
+    if (r.error?.code === '23505') jaEstavam++
+    else if (r.error) return falha(adicionados ? `${adicionados} adicionados, mas parou em ${it.nome}: ${traduzirErro(r.error)}` : traduzirErro(r.error))
+    else adicionados++
+  }
+  return ok({ adicionados, jaEstavam })
 }
 
 export async function editarItem(id, dados) {
