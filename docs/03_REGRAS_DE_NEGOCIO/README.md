@@ -9,7 +9,9 @@
 | Editar/apagar item que criou (enquanto pendente) | ✅ | ✅ | ✅ |
 | Marcar item como comprado / apagar qualquer item | ❌ | ✅ | ✅ |
 | Ver escala da semana (todos) | ✅ | ✅ | ✅ |
-| Criar/editar/apagar turnos | ❌ | ✅ | ✅ |
+| Mandar os próprios turnos (ficam "Aguardando"); editar/apagar os próprios enquanto aguardam | ✅ | ✅ | ✅ |
+| Criar/editar/apagar turno de qualquer pessoa (já entra aprovado) | ❌ | ✅ | ✅ |
+| Aprovar/recusar turno que alguém mandou | ❌ | ✅ | ✅ |
 | Pedir troca ou folga | ✅ | ✅ | ✅ |
 | Aprovar/recusar pedidos | ❌ | ✅ | ✅ |
 | Ver horas de todos | ❌ (só as suas) | ✅ | ✅ |
@@ -30,6 +32,10 @@
 
 ## Escalas
 - Turno: pessoa, data, hora início, hora fim, observação opcional (ex. "abre a loja").
+- Turno tem situação: **aprovado** ou **aguardando**. Funcionário manda os próprios horários e eles entram como **aguardando** (amarelo, com a etiqueta "Aguardando"), à vista de toda a equipe. Turno que gerente ou dono cria já entra aprovado.
+- Gerente e dono aprovam ou recusam cada turno que chega, com desfazer por 5 segundos. Recusar tira o turno da escala.
+- Só turno aprovado conta nas horas, entra em "Copiar semana anterior" e pode ter pedido de troca.
+- Sobreposição vale para turnos aguardando também (a pessoa não manda dois horários que se cruzam).
 - Semana vai de segunda a domingo.
 - Turno pode passar da meia-noite (fim < início = termina no dia seguinte).
 - Mesma pessoa não pode ter dois turnos sobrepostos.

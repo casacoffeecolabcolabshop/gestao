@@ -2,7 +2,7 @@ import { NavLink } from 'react-router-dom'
 import { useAuth } from '../features/auth/AuthContext.jsx'
 import { IconeCompras, IconeEscala, IconePedidos, IconeEquipe } from './Icones.jsx'
 
-export function NavInferior({ pendentes = 0 }) {
+export function NavInferior({ pendentes = 0, turnosAguardando = 0 }) {
   const { souGestor } = useAuth()
   const itens = [
     ['/compras', 'Compras', IconeCompras],
@@ -17,6 +17,7 @@ export function NavInferior({ pendentes = 0 }) {
           <Icone />
           <span>{rotulo}</span>
           {para === '/pedidos' && souGestor && pendentes > 0 && <span className="badge">{pendentes}</span>}
+          {para === '/escala' && souGestor && turnosAguardando > 0 && <span className="badge">{turnosAguardando}</span>}
         </NavLink>
       ))}
     </nav>

@@ -20,6 +20,7 @@ Ordem de construção. Cada item termina com tela funcionando no celular e RLS t
 14. [x] **Entrar com Google** sem convite (ADR-008): conta nova vira funcionário ativo.
 15. [x] **Layout para computador** (a partir de 960px): navegação lateral, Compras com painel ao lado, Escala em grade, formulários no centro, chat na lateral (docs/02).
 16. [x] **Gerente ativa e desativa pessoas** (decisão do Matheus, 24/11): nunca o dono nem a si mesmo; papel continua só com o dono.
+17. [x] **Funcionário manda os próprios turnos, gerente aprova** (pedido da equipe, 24/11): turno "Aguardando" até gerente/dono aprovar.
 
 ## Fase 2 (só se a equipe pedir)
 - Convite pelo próprio app (edge function)

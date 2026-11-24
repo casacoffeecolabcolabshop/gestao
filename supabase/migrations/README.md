@@ -5,5 +5,5 @@
 As migrations foram aplicadas pelo SQL Editor do painel, não pelo CLI. Antes do primeiro `supabase db push` nesse projeto, marcar como aplicadas para não rodar de novo:
 ```
 npx supabase link --project-ref makrghducycdotzbknig
-npx supabase migration repair --status applied 20261124000000 20261124010000 20261124020000 20261124030000
+npx supabase migration repair --status applied 20261124000000 20261124010000 20261124020000 20261124030000 20261124040000
 ```

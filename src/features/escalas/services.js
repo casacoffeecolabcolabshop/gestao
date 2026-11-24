@@ -2,7 +2,7 @@ import { supabase } from '../../lib/supabase.js'
 import { de, ok, falha, traduzirErro } from '../../lib/resultado.js'
 import { somarDias } from '../../lib/datas.js'
 
-const CAMPOS_TURNO = 'id, profile_id, data, inicio, fim, observacao'
+const CAMPOS_TURNO = 'id, profile_id, data, inicio, fim, observacao, status'
 const hhmm = (t) => (t ? t.slice(0, 5) : t)
 const normalizarTurno = (t) => ({ ...t, inicio: hhmm(t.inicio), fim: hhmm(t.fim) })
 
@@ -33,6 +33,8 @@ const limparTurno = (d) => ({
   inicio: d.inicio,
   fim: d.fim,
   observacao: d.observacao?.trim() || null,
+  // funcionário sempre grava "pendente" (gatilho no banco); gerente/dono mantém o que veio (copiar, desfazer)
+  ...(d.status ? { status: d.status } : {}),
 })
 
 export async function criarTurno(dados) {
@@ -49,6 +51,18 @@ export async function editarTurno(id, dados) {
   return r.error ? de(r) : ok(normalizarTurno(r.data))
 }
 
+// Turnos que funcionários mandaram e aguardam gerente/dono (docs/03), de hoje em diante.
+export async function listarTurnosAguardando(desde) {
+  const r = await supabase.from('shifts').select(CAMPOS_TURNO).eq('status', 'pendente').gte('data', desde).order('data').order('inicio')
+  return r.error ? de(r) : ok(r.data.map(normalizarTurno))
+}
+
+export async function aprovarTurno(id) {
+  const r = await supabase.from('shifts').update({ status: 'aprovado' }).eq('id', id).select('id')
+  if (r.error) return de(r)
+  return r.data.length ? ok(true) : falha('Esse turno não está mais aguardando')
+}
+
 export async function apagarTurno(id) {
   const r = await supabase.from('shifts').delete().eq('id', id).select('id')
   if (r.error) return de(r)
@@ -59,6 +73,7 @@ export async function apagarTurno(id) {
 export async function copiarSemana(origem, destino, ativos) {
   const r = await listarTurnosDaSemana(origem)
   if (r.error) return r
+  r.data = r.data.filter((t) => t.status === 'aprovado') // só turno aprovado é copiado (docs/03)
   if (!r.data.length) return falha('A semana anterior não tem turnos para copiar')
   const deslocamento = Math.round((new Date(destino) - new Date(origem)) / 864e5)
   const criados = []

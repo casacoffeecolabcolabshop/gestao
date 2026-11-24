@@ -160,3 +160,8 @@ form{display:flex;flex-direction:column;gap:14px}
 .btn.google svg{width:20px;height:20px}
 .ou{display:flex;align-items:center;gap:12px;color:var(--cor-suave);font-size:14px}
 .ou::before,.ou::after{content:"";flex:1;height:1px;background:var(--cor-linha)}
+/* turno que o funcionário mandou e aguarda o gerente (docs/03) */
+.turno.aguardando{border:1px dashed var(--cor-pendente);background:var(--cor-pendente-fundo)}
+.turno-aprovar .acoes .btn.ok{flex:1}
+.turno-aviso{margin:0}
+.para-aprovar{margin-bottom:8px}

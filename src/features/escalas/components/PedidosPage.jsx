@@ -48,7 +48,7 @@ export function PedidosPage() {
   const abrirForm = async () => {
     const { data, error } = await listarTurnos(hoje(), somarDias(hoje(), 60))
     if (error) return toast(error, { erro: true })
-    setForm({ meusTurnos: data.filter((t) => t.profile_id === perfil.id) })
+    setForm({ meusTurnos: data.filter((t) => t.profile_id === perfil.id && t.status === 'aprovado') }) // troca só de turno aprovado
   }
 
   const enviar = async (d) => {

@@ -1,24 +1,28 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { useOutletContext } from 'react-router-dom'
 import { useAuth } from '../../auth/AuthContext.jsx'
 import { useToast } from '../../../components/Toast.jsx'
 import { Carregando, EstadoErro, EstadoVazio } from '../../../components/Estados.jsx'
 import { Etiqueta } from '../../../components/Etiqueta.jsx'
 import { BotaoChat } from '../../chat/index.js'
-import { DIAS_LONGOS, MESES_LONGOS, fmtSemana, hoje, pad, parseData, segundaDaSemana, somarDias, ymd } from '../../../lib/datas.js'
+import { DIAS_LONGOS, MESES_LONGOS, fmtDia, fmtSemana, hoje, pad, parseData, segundaDaSemana, somarDias, ymd } from '../../../lib/datas.js'
 import { fmtHoras, minutosNaSemana, minutosNoMes, viraODia } from '../horas.js'
-import { listarTurnos, criarTurno, editarTurno, apagarTurno, copiarSemana, apagarVarios } from '../services.js'
+import { listarTurnos, listarTurnosAguardando, aprovarTurno, criarTurno, editarTurno, apagarTurno, copiarSemana, apagarVarios } from '../services.js'
 import { TurnoForm } from './TurnoForm.jsx'
 
 export function EscalaPage() {
   const { perfil, souGestor } = useAuth()
-  const { equipe } = useOutletContext()
+  const { equipe, recarregarPendentes } = useOutletContext()
   const toast = useToast()
   const [semana, setSemana] = useState(() => segundaDaSemana(hoje()))
   const [turnos, setTurnos] = useState([])
   const [estado, setEstado] = useState('carregando')
   const [form, setForm] = useState(null)
   const [copiando, setCopiando] = useState(false)
+  // turnos que funcionários mandaram (docs/03): gerente/dono aprova ou recusa, com desfazer por 5s
+  const [aguardando, setAguardando] = useState([])
+  const [emEspera, setEmEspera] = useState({}) // id do turno -> aprovado (true/false)
+  const adiados = useRef(new Map()) // id -> { timer, aprovado }
 
   // mês de referência = mês da quinta-feira da semana
   const meio = parseData(somarDias(semana, 3))
@@ -30,27 +34,74 @@ export function EscalaPage() {
   const carregar = useCallback(
     async (silencioso) => {
       if (!silencioso) setEstado('carregando')
-      const { data, error } = await listarTurnos(de_, ate)
-      if (error) return silencioso ? toast(error, { erro: true }) : setEstado(error)
-      setTurnos(data)
+      const [r, ag] = await Promise.all([listarTurnos(de_, ate), souGestor ? listarTurnosAguardando(hoje()) : Promise.resolve({ data: [] })])
+      if (r.error) return silencioso ? toast(r.error, { erro: true }) : setEstado(r.error)
+      setTurnos(r.data)
+      setAguardando(ag.data || [])
       setEstado('ok')
+      recarregarPendentes()
     },
-    [de_, ate, toast],
+    [de_, ate, toast, souGestor, recarregarPendentes],
   )
   useEffect(() => {
     carregar()
   }, [carregar])
 
-  const daSemana = turnos.filter((t) => t.data >= semana && t.data < somarDias(semana, 7))
+  // decisão esperando os 5s já aparece na escala (aprovado fica, recusado some)
+  const vistos = turnos.filter((t) => emEspera[t.id] !== false).map((t) => (t.id in emEspera ? { ...t, status: 'aprovado' } : t))
+  const daSemana = vistos.filter((t) => t.data >= semana && t.data < somarDias(semana, 7))
   const atual = semana === segundaDaSemana(hoje())
   const pessoa = (id) => equipe.find((p) => p.id === id)
+
+  // funcionário mexe só nos próprios turnos que aguardam; gerente/dono em todos
+  const podeMexer = (t) => souGestor || (t.profile_id === perfil.id && t.status === 'pendente')
 
   const salvar = async (d) => {
     const { error } = form.id ? await editarTurno(form.id, d) : await criarTurno(d)
     if (error) return error
     setForm(null)
-    toast('Turno salvo')
+    toast(souGestor ? 'Turno salvo' : 'Turno mandado. Aguardando o gerente aprovar.')
     carregar(true)
+  }
+
+  const tirarDaEspera = (id) =>
+    setEmEspera((e) => {
+      const n = { ...e }
+      delete n[id]
+      return n
+    })
+  const enviarDecisaoTurno = useCallback(
+    async (id, aprovado) => {
+      adiados.current.delete(id)
+      const { error } = aprovado ? await aprovarTurno(id) : await apagarTurno(id)
+      tirarDaEspera(id)
+      if (error) toast(error, { erro: true })
+      carregar(true)
+    },
+    [toast, carregar],
+  )
+  // saiu da tela antes dos 5s: manda as decisões que estavam esperando
+  useEffect(() => {
+    const fila = adiados.current
+    return () => {
+      for (const [id, { timer, aprovado }] of fila) {
+        clearTimeout(timer)
+        ;(aprovado ? aprovarTurno(id) : apagarTurno(id)).then((r) => r.error && toast(r.error, { erro: true }))
+      }
+      fila.clear()
+    }
+  }, [toast])
+  const decidirTurno = (t, aprovado) => {
+    setEmEspera((e) => ({ ...e, [t.id]: aprovado }))
+    const timer = setTimeout(() => enviarDecisaoTurno(t.id, aprovado), 5000)
+    adiados.current.set(t.id, { timer, aprovado })
+    toast(`Turno de ${pessoa(t.profile_id)?.nome || 'alguém'} ${aprovado ? 'aprovado' : 'recusado'}`, {
+      desfazer: () => {
+        clearTimeout(timer)
+        adiados.current.delete(t.id)
+        tirarDaEspera(t.id)
+      },
+    })
   }
   const apagar = async () => {
     const t = form
@@ -85,12 +136,15 @@ export function EscalaPage() {
     })
   }
 
-  const minSem = minutosNaSemana(turnos, perfil.id, semana)
-  const minMes = minutosNoMes(turnos, perfil.id, meio.getFullYear(), meio.getMonth())
+  // horas: só turno aprovado (docs/03)
+  const aprovados = vistos.filter((t) => t.status === 'aprovado')
+  const minSem = minutosNaSemana(aprovados, perfil.id, semana)
+  const minMes = minutosNoMes(aprovados, perfil.id, meio.getFullYear(), meio.getMonth())
+  const paraAprovar = aguardando.filter((t) => !(t.id in emEspera))
   const linhasEquipe = souGestor
     ? equipe
         .filter((p) => p.ativo || daSemana.some((t) => t.profile_id === p.id))
-        .map((p) => ({ p, m: minutosNaSemana(turnos, p.id, semana) }))
+        .map((p) => ({ p, m: minutosNaSemana(aprovados, p.id, semana) }))
         .sort((a, b) => b.m - a.m)
     : []
   const maxMin = Math.max(1, ...linhasEquipe.map((r) => r.m))
@@ -126,6 +180,39 @@ export function EscalaPage() {
       {estado !== 'carregando' && estado !== 'ok' && <EstadoErro mensagem={estado} onTentar={() => carregar()} />}
       {estado === 'ok' && (
         <>
+          {souGestor && paraAprovar.length > 0 && (
+            <section className="para-aprovar">
+              <div className="secao">
+                <span>Turnos para aprovar ({paraAprovar.length})</span>
+              </div>
+              <div className="lista">
+                {paraAprovar.map((t) => (
+                  <div key={t.id} className="card coluna turno-aprovar">
+                    <span className="linha entre">
+                      <span>
+                        <b>{pessoa(t.profile_id)?.nome || 'Alguém'}</b>
+                        <span className="meta">
+                          {' '}
+                          · {fmtDia(t.data)}, {t.inicio} às {t.fim}
+                          {viraODia(t.inicio, t.fim) ? ' (dia seguinte)' : ''}
+                        </span>
+                      </span>
+                      <Etiqueta cor="pend">Aguardando</Etiqueta>
+                    </span>
+                    {t.observacao && <span className="meta">“{t.observacao}”</span>}
+                    <div className="acoes">
+                      <button className="btn perigo" onClick={() => decidirTurno(t, false)}>
+                        Recusar
+                      </button>
+                      <button className="btn ok" onClick={() => decidirTurno(t, true)}>
+                        Aprovar
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </section>
+          )}
           <div className="escala-resumo">
           <div className="horas">
             <div>
@@ -165,7 +252,7 @@ export function EscalaPage() {
           </div>
 
           {!daSemana.length && (
-            <EstadoVazio titulo="Semana sem turnos">{souGestor ? 'Copie a semana anterior ou adicione turno por dia.' : 'A escala desta semana ainda não saiu.'}</EstadoVazio>
+            <EstadoVazio titulo="Semana sem turnos">{souGestor ? 'Copie a semana anterior ou adicione turno por dia.' : 'Ninguém montou esta semana ainda. Toque em + Meu turno no dia para mandar seus horários.'}</EstadoVazio>
           )}
 
           <div className="secao">
@@ -203,16 +290,23 @@ export function EscalaPage() {
                                 <Etiqueta>Desativado</Etiqueta>
                               </>
                             )}
+                            {t.status === 'pendente' && (
+                              <>
+                                {' '}
+                                <Etiqueta cor="pend">Aguardando</Etiqueta>
+                              </>
+                            )}
                             {t.observacao && <small>{t.observacao}</small>}
                           </span>
                         </>
                       )
-                      return souGestor ? (
-                        <button key={t.id} className={`turno ${meu ? 'meu' : ''}`} onClick={() => setForm(t)}>
+                      const classe = `turno ${meu ? 'meu' : ''} ${t.status === 'pendente' ? 'aguardando' : ''}`
+                      return podeMexer(t) ? (
+                        <button key={t.id} className={classe} onClick={() => setForm(t)}>
                           {conteudo}
                         </button>
                       ) : (
-                        <div key={t.id} className={`turno ${meu ? 'meu' : ''}`}>
+                        <div key={t.id} className={classe}>
                           {conteudo}
                         </div>
                       )
@@ -220,9 +314,13 @@ export function EscalaPage() {
                   ) : (
                     <div className="vazio-dia">Ninguém escalado</div>
                   )}
-                  {souGestor && (
+                  {souGestor ? (
                     <button className="btn peq mais-turno" onClick={() => setForm({ data: d })}>
                       + Turno
+                    </button>
+                  ) : (
+                    <button className="btn peq mais-turno" onClick={() => setForm({ data: d })}>
+                      + Meu turno
                     </button>
                   )}
                 </div>
@@ -232,7 +330,7 @@ export function EscalaPage() {
         </>
       )}
 
-      {form && <TurnoForm turno={form} equipe={equipe} onSalvar={salvar} onApagar={apagar} onFechar={() => setForm(null)} />}
+      {form && <TurnoForm turno={form} equipe={equipe} meuId={souGestor ? null : perfil.id} onSalvar={salvar} onApagar={apagar} onFechar={() => setForm(null)} />}
     </>
   )
 }

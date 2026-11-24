@@ -2,9 +2,10 @@ import { useState } from 'react'
 import { Sheet } from '../../../components/Sheet.jsx'
 import { duracaoMin, fmtHoras, viraODia } from '../horas.js'
 
-export function TurnoForm({ turno, equipe, onSalvar, onApagar, onFechar }) {
+// `meuId`: funcionário mandando o próprio turno (sem escolher pessoa; fica "Aguardando", docs/03)
+export function TurnoForm({ turno, equipe, meuId = null, onSalvar, onApagar, onFechar }) {
   const [d, setD] = useState({
-    profile_id: turno.profile_id || '',
+    profile_id: meuId || turno.profile_id || '',
     data: turno.data,
     inicio: turno.inicio || '07:00',
     fim: turno.fim || '13:00',
@@ -29,19 +30,23 @@ export function TurnoForm({ turno, equipe, onSalvar, onApagar, onFechar }) {
   }
 
   return (
-    <Sheet titulo={turno.id ? 'Editar turno' : 'Novo turno'} onFechar={onFechar}>
+    <Sheet titulo={meuId ? (turno.id ? 'Ajustar meu turno' : 'Mandar meu turno') : turno.id ? 'Editar turno' : 'Novo turno'} onFechar={onFechar}>
       <form onSubmit={handleSubmit} noValidate>
-        <label className="campo">
-          <span>Pessoa</span>
-          <select id="turno-pessoa" value={d.profile_id} onChange={mudar('profile_id')}>
-            <option value="">Escolha</option>
-            {pessoas.map((p) => (
-              <option key={p.id} value={p.id}>
-                {p.nome}
-              </option>
-            ))}
-          </select>
-        </label>
+        {meuId ? (
+          <p className="dica turno-aviso">Fica como <b>Aguardando</b> até o gerente aprovar.</p>
+        ) : (
+          <label className="campo">
+            <span>Pessoa</span>
+            <select id="turno-pessoa" value={d.profile_id} onChange={mudar('profile_id')}>
+              <option value="">Escolha</option>
+              {pessoas.map((p) => (
+                <option key={p.id} value={p.id}>
+                  {p.nome}
+                </option>
+              ))}
+            </select>
+          </label>
+        )}
         <label className="campo">
           <span>Dia</span>
           <input type="date" id="turno-data" value={d.data} onChange={mudar('data')} />
@@ -71,7 +76,7 @@ export function TurnoForm({ turno, equipe, onSalvar, onApagar, onFechar }) {
             </button>
           )}
           <button className="btn prim" disabled={salvando}>
-            Salvar
+            {meuId && !turno.id ? 'Mandar' : 'Salvar'}
           </button>
         </div>
       </form>

@@ -5,7 +5,8 @@ import { useAuth } from '../features/auth/AuthContext.jsx'
 import { MinhaConta } from '../features/auth/components/MinhaConta.jsx'
 import { ChatPainel } from '../features/chat/index.js'
 import { listarEquipe } from '../features/equipe/services.js'
-import { listarPedidos } from '../features/escalas/services.js'
+import { listarPedidos, listarTurnosAguardando } from '../features/escalas/services.js'
+import { hoje } from '../lib/datas.js'
 import { CASA } from '../lib/config.js'
 
 // Moldura comum: topo com a conta, conteúdo, ação principal + navegação no rodapé.
@@ -14,6 +15,7 @@ export function Layout() {
   const [slot, setSlot] = useState(null)
   const [equipe, setEquipe] = useState([])
   const [pendentes, setPendentes] = useState(0)
+  const [turnosAguardando, setTurnosAguardando] = useState(0)
   const [conta, setConta] = useState(false)
   const { pathname } = useLocation()
 
@@ -21,10 +23,15 @@ export function Layout() {
     const { data } = await listarEquipe()
     if (data) setEquipe(data)
   }, [])
+  // números na navegação (só gerente/dono): pedidos e turnos esperando decisão
   const recarregarPendentes = useCallback(async () => {
-    if (!souGestor) return setPendentes(0)
-    const { data } = await listarPedidos()
-    if (data) setPendentes(data.filter((p) => p.status === 'pendente').length)
+    if (!souGestor) {
+      setPendentes(0)
+      return setTurnosAguardando(0)
+    }
+    const [pedidos, turnos] = await Promise.all([listarPedidos(), listarTurnosAguardando(hoje())])
+    if (pedidos.data) setPendentes(pedidos.data.filter((p) => p.status === 'pendente').length)
+    if (turnos.data) setTurnosAguardando(turnos.data.length)
   }, [souGestor])
 
   useEffect(() => {
@@ -61,7 +68,7 @@ export function Layout() {
         <div className="in">
           <span className="marca rodape-marca">{CASA.nome}</span>
           <div ref={setSlot} />
-          <NavInferior pendentes={pendentes} />
+          <NavInferior pendentes={pendentes} turnosAguardando={turnosAguardando} />
         </div>
       </div>
       <ChatPainel nomeDe={nomeDe} />

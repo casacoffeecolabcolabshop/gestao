@@ -10,6 +10,7 @@ create type status_item_t as enum ('pendente', 'comprado');
 create type tipo_pedido_t as enum ('troca', 'folga');
 create type status_pedido_t as enum ('pendente', 'aprovado', 'recusado', 'cancelado');
 create type sala_chat_t    as enum ('compras', 'escalas');
+create type status_turno_t as enum ('aprovado', 'pendente');  -- pendente = "Aguardando" aprovação (docs/03)
 
 -- ========== util ==========
 create or replace function set_updated_at() returns trigger language plpgsql as $$
@@ -84,6 +85,7 @@ create table shifts (
   inicio      time not null,
   fim         time not null check (fim <> inicio),
   observacao  text check (char_length(observacao) <= 100),
+  status      status_turno_t not null default 'aprovado',
   criado_por  uuid default auth.uid() references profiles(id),
   created_at  timestamptz not null default now(),
   updated_at  timestamptz not null default now()
@@ -111,12 +113,23 @@ begin
 end $$;
 create trigger trg_shifts_sobreposicao before insert or update on shifts for each row execute function checar_sobreposicao();
 
--- horas por pessoa por semana (segunda a domingo)
+-- quem não é gerente/dono sempre manda turno como "pendente"
+create or replace function turno_de_funcionario_aguarda() returns trigger language plpgsql as $$
+begin
+  if auth.uid() is not null and not coalesce(sou_gestor(), false) then
+    new.status := 'pendente';
+  end if;
+  return new;
+end $$;
+create trigger trg_turno_aguarda before insert on shifts for each row execute function turno_de_funcionario_aguarda();
+
+-- horas por pessoa por semana (segunda a domingo), só turno aprovado
 create or replace view v_horas_semana with (security_invoker = true) as
 select profile_id,
        date_trunc('week', data)::date as semana,
        round(sum(extract(epoch from (upper(intervalo_turno(data, inicio, fim)) - lower(intervalo_turno(data, inicio, fim)))) / 3600)::numeric, 2) as horas
 from shifts
+where status = 'aprovado'
 group by profile_id, date_trunc('week', data);
 
 -- ========== shift_requests (troca e folga) ==========
@@ -234,13 +247,21 @@ create policy itens_gestor_apagar on shopping_items for delete using (sou_gestor
 -- escala
 create policy turnos_ler on shifts for select using (meu_papel() is not null);
 create policy turnos_gestor on shifts for all using (sou_gestor()) with check (sou_gestor());
+-- funcionário: cria, ajusta e apaga só os próprios turnos que aguardam
+create policy turnos_func_criar on shifts for insert
+  with check (meu_papel() is not null and profile_id = auth.uid() and status = 'pendente');
+create policy turnos_func_editar on shifts for update
+  using (meu_papel() is not null and profile_id = auth.uid() and status = 'pendente')
+  with check (profile_id = auth.uid() and status = 'pendente');
+create policy turnos_func_apagar on shifts for delete
+  using (meu_papel() is not null and profile_id = auth.uid() and status = 'pendente');
 
 -- pedidos: funcionário vê e cria os seus; gestor vê todos (decisão só via RPC)
 create policy pedidos_ler on shift_requests for select
   using ((solicitante_id = auth.uid() and meu_papel() is not null) or sou_gestor());
 create policy pedidos_criar on shift_requests for insert
   with check (meu_papel() is not null and solicitante_id = auth.uid() and status = 'pendente'
-              and (shift_id is null or exists (select 1 from shifts s where s.id = shift_id and s.profile_id = auth.uid())));
+              and (shift_id is null or exists (select 1 from shifts s where s.id = shift_id and s.profile_id = auth.uid() and s.status = 'aprovado')));
 create policy pedidos_cancelar on shift_requests for update
   using (solicitante_id = auth.uid() and status = 'pendente')
   with check (solicitante_id = auth.uid() and status = 'cancelado');

@@ -16,6 +16,12 @@ Ou, no mercado: Compras → **Para comprar** → toca no check de cada item conf
 ## Montar a escala (gerente)
 Escala → semana atual → toca no dia → **+ Turno** → pessoa, início, fim → **Salvar**. Botão **Copiar semana anterior** para não começar do zero.
 
+## Mandar meus horários (funcionário)
+Escala → no dia → **+ Meu turno** → começo e fim → **Mandar** → aparece amarelo "Aguardando" até o gerente aprovar.
+
+## Aprovar horários da equipe (gerente)
+Escala → bloco **Turnos para aprovar** no topo → **Aprovar** ou **Recusar** (desfazer por 5s).
+
 ## Ver minha escala (funcionário)
 Escala → semana com meus turnos destacados + "Suas horas: 32h".
 
